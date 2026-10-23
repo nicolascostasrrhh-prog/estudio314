@@ -44,3 +44,6 @@ La **categoría institucional** es independiente de la **modalidad económica** 
 ## Marca
 
 Estudio 3.14 · «La diferencia está en la perspectiva».
+
+
+Actualización de despliegue: GitHub Pages habilitado para el prototipo público.

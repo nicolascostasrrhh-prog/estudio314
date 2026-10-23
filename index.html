@@ -206,7 +206,7 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 <div class="field"><label for="auth-email">Correo electrónico</label><input id="auth-email" type="email" required autocomplete="email"></div>
 <div class="field"><label for="auth-password">Contraseña (mínimo 8 caracteres)</label><input id="auth-password" type="password" minlength="8" required autocomplete="current-password"></div>
 <button class="primary wide-action" type="submit" id="auth-submit">Ingresar a mi cuenta ↗</button>
-<button type="button" class="auth-secondary" onclick="resetPassword()">Olvidé mi contraseña</button>
+<button type="button" class="auth-secondary" onclick="resetPassword()">Olvidé mi contraseña</button><div id="password-recovery" class="field" hidden><label for="new-password">Nueva contraseña</label><input id="new-password" type="password" minlength="8" autocomplete="new-password"><button type="button" class="outline wide-action" onclick="saveNewPassword()">Guardar nueva contraseña</button></div>
 </form><p class="small muted">El registro queda pendiente de verificación y admisión. Registrarse no habilita automáticamente la prestación de servicios jurídicos en la plataforma.</p>
 </div>
 <div class="auth-card" id="account-profile" hidden>
@@ -299,7 +299,7 @@ function renderGovernance(){
 updateRequirements();renderGovernance();
 </script>
 <script src="config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* Módulo de autenticación REAL, se activa solo con la configuración Supabase publicada.
    El panel de créditos, avales y servicio de ejemplo sigue aislado de estas cuentas. */
@@ -361,6 +361,14 @@ async function signOutAccount(){
  if(error){authText('No pudimos cerrar la sesión: '+authErr(error));return}
  await displayAccount();
 }
+async function saveNewPassword(){
+ if(!authClient){authText('No hay conexión configurada.');return}
+ const password=document.getElementById('new-password').value;
+ if(password.length<8){authText('La contraseña debe tener al menos 8 caracteres.');return}
+ const {error}=await authClient.auth.updateUser({password});
+ authText(error?'No se pudo actualizar: '+authErr(error):'Contraseña actualizada. Podés usarla para ingresar.');
+ if(!error){document.getElementById('password-recovery').hidden=true;document.getElementById('new-password').value='';}
+}
 async function resetPassword(){
  if(!authClient){authText('La recuperación de contraseñas estará disponible cuando se conecte Supabase.');return}
  const email=document.getElementById('auth-email').value.trim();
@@ -371,7 +379,7 @@ async function resetPassword(){
 if(authReady){
  authClient=window.supabase.createClient(authCfg.url,authCfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
  authText('Servicio de autenticación conectado. Podés ingresar o registrarte.');
- authClient.auth.onAuthStateChange(()=>{setTimeout(()=>displayAccount(),0)});
+ authClient.auth.onAuthStateChange((event)=>{if(event==='PASSWORD_RECOVERY'){document.getElementById('password-recovery').hidden=false;authText('Elegí tu nueva contraseña y guardala.');}else{setTimeout(()=>displayAccount(),0)}});
  displayAccount();
 }else{
  authText('Versión de demostración: el registro real se habilitará cuando Estudio 3.14 conecte su base de datos y servicio de identidad.');

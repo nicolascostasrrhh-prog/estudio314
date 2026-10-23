@@ -98,8 +98,11 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 .governance-alert{border-left:4px solid #75838d;background:#e1e6e8;padding:20px 27px;margin-bottom:22px}.governance-alert strong{font:800 15px Manrope}.governance-alert p{font-size:13px;color:#53616b;line-height:1.8;margin:7px 0 0}
 .admission-dashboard{display:grid;grid-template-columns:1fr 1fr;gap:18px}.admission-dashboard .panel{min-height:465px}.requirements-line{background:#e1e7ea;padding:11px 15px;font-size:12px;color:#45535c}.governance-review{margin:18px 0}.application-summary{background:#e2e7e9;padding:17px 20px;margin-top:17px;font-size:13px}.application-summary p{margin:7px 0;color:#4a5861}.application-summary ul{margin:10px 0;padding-left:20px}.governance-trail{margin-top:27px;border-top:1px solid #bdc8ce;padding-top:14px}.governance-trail h4{font:800 14px Manrope}.audit-event{display:flex;justify-content:space-between;gap:20px;border-top:1px solid #cbd4d8;padding:10px 0;font-size:12px}.audit-event time{white-space:nowrap;color:#71808a}
 @media(max-width:800px){.admission-dashboard{grid-template-columns:1fr}.governance-link{display:block}.governance-link button{margin-top:14px}.admission-dashboard .panel{min-height:0}.audit-event{display:block}}
+
+.nav-account{border:1px solid #9aa6af!important;color:#f5f7f8!important}
+.auth-status{padding:14px 20px;background:#dfe5e8;border-left:4px solid #6f818d;font-size:13px;margin-bottom:25px}.auth-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:20px;align-items:start}.auth-card{padding:40px;background:#f6f7f7;border:1px solid #bbc6cc}.auth-card[hidden]{display:none}.auth-card h3,.auth-explain h3{font-size:clamp(25px,3vw,37px);margin:12px 0 23px}.auth-tabs{display:flex;border-bottom:1px solid #bac6cd;margin-bottom:24px}.auth-tabs button{background:transparent;border:0;border-bottom:3px solid transparent;padding:13px 22px;font-weight:800;font-size:12px;color:#71818c}.auth-tabs button.active{border-bottom-color:#29343d;color:#28353e}.auth-secondary{background:transparent;border:0;text-decoration:underline;font-size:12px;margin-top:19px;color:#536571}.auth-explain{background:#313b43;padding:35px;color:#f4f6f7}.auth-explain .eyebrow{color:#b5c3cc}.auth-line{display:flex;gap:22px;border-top:1px solid #697781;padding:20px 0}.auth-line span{font-weight:800;color:#b4c2cd}.auth-line b{font-size:15px}.auth-line p{color:#cbd4d9;font-size:12px;margin:5px 0}.account-kpis{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:25px 0}.account-kpis>div{background:#e5ebee;padding:16px;min-width:0}.account-kpis span{display:block;font-size:9px;letter-spacing:.1em;font-weight:800;color:#677782;margin-bottom:10px}.account-kpis strong{font-size:15px;overflow-wrap:anywhere}@media(max-width:800px){.auth-layout{grid-template-columns:1fr}.auth-card,.auth-explain{padding:24px}.account-kpis{grid-template-columns:1fr}}
 </style></head><body>
-<header><div class="brand">ESTUDIO <span>3.14</span></div><nav aria-label="Secciones"><button onclick="go('inicio')">Inicio</button><button onclick="go('buscar')">Buscar abogado</button><button onclick="go('membresias')">Membresías</button><button onclick="go('panel')">Panel de miembro</button><button onclick="go('avales')">Avales</button></nav></header>
+<header><div class="brand">ESTUDIO <span>3.14</span></div><nav aria-label="Secciones"><button onclick="go('inicio')">Inicio</button><button onclick="go('buscar')">Buscar abogado</button><button onclick="go('membresias')">Membresías</button><button onclick="go('panel')">Panel de miembro</button><button onclick="go('avales')">Avales</button><button class="nav-account" onclick="go('cuenta')">Mi cuenta ↗</button></nav></header>
 <main>
 <section id="inicio" class="active">
 <div class="hero home-hero">
@@ -190,6 +193,30 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 <div class="governance-trail"><h4>Registro de movimientos de demostración</h4><div id="audit-log"></div></div>
 </div>
 </section>
+
+<section id="cuenta" class="inner-page">
+<div class="interior-hero"><div class="eyebrow">ESTUDIO 3.14 / ÁREA PRIVADA</div><h2>Tu estudio empieza<br><span>con tu cuenta.</span></h2><p>Ingresá a tu espacio profesional o solicitá acceso para formar parte de la comunidad.</p><div class="inner-meta">ACCESO SEGURO · IDENTIDAD · MEMBRESÍA</div></div>
+<div class="auth-status" id="auth-status" role="status" aria-live="polite">Comprobando conexión...</div>
+<div class="auth-layout">
+<div class="auth-card" id="auth-forms">
+<div class="eyebrow">ACCESO A ESTUDIO 3.14</div><h3>Ingresá o registrate</h3>
+<div class="auth-tabs"><button type="button" id="tab-login" class="active" onclick="authTab('login')">Ingresar</button><button type="button" id="tab-register" onclick="authTab('register')">Crear cuenta</button></div>
+<form id="auth-form" onsubmit="submitAuth(event)">
+<div id="auth-name-row" class="field" hidden><label for="auth-name">Nombre y apellido</label><input id="auth-name" autocomplete="name" maxlength="120"></div>
+<div class="field"><label for="auth-email">Correo electrónico</label><input id="auth-email" type="email" required autocomplete="email"></div>
+<div class="field"><label for="auth-password">Contraseña (mínimo 8 caracteres)</label><input id="auth-password" type="password" minlength="8" required autocomplete="current-password"></div>
+<button class="primary wide-action" type="submit" id="auth-submit">Ingresar a mi cuenta ↗</button>
+<button type="button" class="auth-secondary" onclick="resetPassword()">Olvidé mi contraseña</button>
+</form><p class="small muted">El registro queda pendiente de verificación y admisión. Registrarse no habilita automáticamente la prestación de servicios jurídicos en la plataforma.</p>
+</div>
+<div class="auth-card" id="account-profile" hidden>
+<div class="eyebrow">SESIÓN AUTENTICADA</div><h3 id="account-name">Mi cuenta</h3><p id="account-email"></p>
+<div class="account-kpis"><div><span>CATEGORÍA INSTITUCIONAL</span><strong id="account-category">Pendiente</strong></div><div><span>ESTADO DEL PERFIL</span><strong id="account-verified">Pendiente</strong></div><div><span>CRÉDITOS REALES</span><strong id="account-credits">—</strong></div></div>
+<p class="muted small">Los créditos reales se consultan en el servidor. El saldo de 150 créditos del panel de demostración no forma parte de tu cuenta.</p>
+<button class="outline" onclick="signOutAccount()">Cerrar sesión</button>
+</div>
+<div class="auth-explain"><div class="eyebrow">CÓMO FUNCIONA EL ACCESO</div><h3>Una identidad para toda la plataforma.</h3><div class="auth-line"><span>01</span><div><b>Creá tu cuenta</b><p>Registrá tu correo y confirmalo desde el mensaje de verificación.</p></div></div><div class="auth-line"><span>02</span><div><b>Validación profesional</b><p>La administración deberá verificar identidad, matrícula y categoría.</p></div></div><div class="auth-line"><span>03</span><div><b>Gestioná tu actividad</b><p>Cuando la cuenta esté habilitada, podrás acceder a las herramientas reales y administrar tus servicios.</p></div></div></div>
+</div></section>
 </main><footer><div class="brand">ESTUDIO 3.14</div>La diferencia está en la perspectiva.<br><small>Prototipo de producto · No presta asesoramiento legal ni procesa pagos o consultas reales.</small></footer>
 <script>
 'use strict';
@@ -270,4 +297,85 @@ function renderGovernance(){
  document.getElementById('audit-log').innerHTML=governance.history.length?governance.history.slice().reverse().map(e=>'<div class="audit-event"><span>'+escapeHTML(e.message)+'</span><time>'+escapeHTML(e.date)+'</time></div>').join(''):'<p class="muted">Sin movimientos registrados.</p>';
 }
 updateRequirements();renderGovernance();
-</script></body></html>
+</script>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+/* Módulo de autenticación REAL, se activa solo con la configuración Supabase publicada.
+   El panel de créditos, avales y servicio de ejemplo sigue aislado de estas cuentas. */
+let authClient=null,authMode='login',authBusy=false;
+const authCfg=window.ESTUDIO314_SUPABASE_CONFIG||{};
+const authReady=Boolean(authCfg.url && authCfg.publishableKey && window.supabase);
+const authNotice=document.getElementById('auth-status');
+function authText(t){authNotice.textContent=t}
+function authTab(mode){
+ authMode=mode;
+ document.getElementById('tab-login').classList.toggle('active',mode==='login');
+ document.getElementById('tab-register').classList.toggle('active',mode==='register');
+ document.getElementById('auth-name-row').hidden=mode!=='register';
+ document.getElementById('auth-name').required=mode==='register';
+ document.getElementById('auth-password').setAttribute('autocomplete',mode==='register'?'new-password':'current-password');
+ document.getElementById('auth-submit').textContent=mode==='register'?'Solicitar registro ↗':'Ingresar a mi cuenta ↗';
+}
+function authErr(error){return error && error.message ? error.message:'No fue posible completar la solicitud.'}
+async function submitAuth(event){
+ event.preventDefault();
+ if(!authClient||authBusy){authText('El registro real todavía no está disponible.');return}
+ const email=document.getElementById('auth-email').value.trim();
+ const password=document.getElementById('auth-password').value;
+ const display_name=document.getElementById('auth-name').value.trim();
+ if(password.length<8){authText('La contraseña debe tener por lo menos ocho caracteres.');return}
+ if(authMode==='register' && display_name.length<2){authText('Ingresá tu nombre y apellido.');return}
+ authBusy=true;document.getElementById('auth-submit').disabled=true;
+ try{
+  if(authMode==='register'){
+   const {data,error}=await authClient.auth.signUp({email,password,options:{data:{display_name},emailRedirectTo:location.origin+location.pathname}});
+   if(error)throw error;
+   authText(data.session?'Cuenta creada. Tu perfil queda pendiente de verificación.':'Revisá tu correo para confirmar el registro. El acceso profesional requiere validación posterior.');
+  }else{
+   const {error}=await authClient.auth.signInWithPassword({email,password});
+   if(error)throw error;
+   await displayAccount();
+  }
+ }catch(err){authText('No pudimos completar el acceso: '+authErr(err))}
+ finally{authBusy=false;document.getElementById('auth-submit').disabled=false}
+}
+async function displayAccount(){
+ if(!authClient)return;
+ const {data,error}=await authClient.auth.getUser();
+ const user=error?null:data.user;
+ document.getElementById('auth-forms').hidden=Boolean(user);
+ document.getElementById('account-profile').hidden=!user;
+ if(!user){authText('Ingresá o registrate para acceder a tu cuenta.');return}
+ document.getElementById('account-email').textContent=user.email||'';
+ const {data:profile,error:profileError}=await authClient.from('member_profiles').select('display_name,category,is_verified,subscription').eq('user_id',user.id).maybeSingle();
+ document.getElementById('account-name').textContent=profile?.display_name||'Cuenta registrada';
+ document.getElementById('account-category').textContent=profile?.category||'Sin asignar';
+ document.getElementById('account-verified').textContent=profile?.is_verified?'Verificado':'Pendiente';
+ const balance=await authClient.rpc('available_credits',{p_member:user.id});
+ document.getElementById('account-credits').textContent=balance.error?'—':String(balance.data??0);
+ authText(profileError?'Sesión abierta, pero el perfil necesita configuración.':'Sesión iniciada. '+(profile?.is_verified?'Tu perfil está verificado.':'La habilitación de servicios requiere verificación administrativa.'));
+}
+async function signOutAccount(){
+ if(!authClient)return;const {error}=await authClient.auth.signOut();
+ if(error){authText('No pudimos cerrar la sesión: '+authErr(error));return}
+ await displayAccount();
+}
+async function resetPassword(){
+ if(!authClient){authText('La recuperación de contraseñas estará disponible cuando se conecte Supabase.');return}
+ const email=document.getElementById('auth-email').value.trim();
+ if(!email){authText('Primero escribí tu correo electrónico.');return}
+ const {error}=await authClient.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+ authText(error?'No se pudo solicitar el correo de recuperación: '+authErr(error):'Si el correo está registrado, recibirás instrucciones de recuperación.');
+}
+if(authReady){
+ authClient=window.supabase.createClient(authCfg.url,authCfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+ authText('Servicio de autenticación conectado. Podés ingresar o registrarte.');
+ authClient.auth.onAuthStateChange(()=>{setTimeout(()=>displayAccount(),0)});
+ displayAccount();
+}else{
+ authText('Versión de demostración: el registro real se habilitará cuando Estudio 3.14 conecte su base de datos y servicio de identidad.');
+ document.getElementById('auth-submit').disabled=true;
+}
+</script>
+</body></html>

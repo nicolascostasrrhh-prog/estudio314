@@ -89,3 +89,5 @@ Se implementan directamente las mejoras técnicas no destructivas que no necesit
 - Migraciones `20261024_017_mp_credit_purchases.sql`, `018_mp_checkout_intents.sql`, `019_mp_atomic_credit.sql`, `020_mp_price_snapshot.sql`. Dos Edge Functions desplegadas: `create-credit-checkout` (JWT) y `mercadopago-credit-webhook` (verificación HMAC, sin JWT).
 - **Estado de activación:** NO hay credenciales de Mercado Pago, paquetes/precios, pagos ni compras activas; hay que aprobar precios y realizar ensayos antes de activar. Documentado en `docs/MERCADO-PAGO.md`.
 - Código HTML/JS comprobado sintácticamente. Pendientes pruebas de UX en navegador (especialmente retorno del magic link, móvil y visibilidad de pestañas), pagos reales, notificaciones, reembolsos y cierre legal.
+
+- **Refinamiento final del panel:** el Centro de Administración se subdivide en Resumen, Miembros, Pedidos y Admisiones y ascensos; las consultas a Supabase conservan sus permisos existentes. Debe probarse la navegación visual desde una cuenta administradora real.

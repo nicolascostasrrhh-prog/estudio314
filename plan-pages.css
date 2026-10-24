@@ -623,3 +623,22 @@ body{background:#e7e8e9}.plan-shell{max-width:1240px;margin:auto;padding:0 28px 
 .demo-content{margin-top:18px;min-height:260px}.demo-stat-row,.demo-kanban{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.demo-stat-row article,.demo-kanban article,.demo-table,.demo-profile{background:#fff;border:1px solid #dce3e7;border-radius:10px;padding:17px}.demo-stat-row small,.demo-kanban small,.demo-profile small{display:block;color:#b07a5e;font-size:9px;font-weight:800;letter-spacing:.1em}.demo-stat-row strong,.demo-kanban strong{display:block;font:normal 20px Georgia,serif;margin:10px 0}.demo-stat-row span,.demo-kanban span{color:#69808d;font-size:11px}.demo-table{margin-top:14px}.demo-table h4{font:normal 23px Georgia,serif;margin:0 0 9px}.demo-table>div{border-top:1px solid #e9edef;padding:13px 0;display:flex;justify-content:space-between;gap:14px;font-size:12px}.demo-table b{color:#a56b51;font-weight:700}.demo-profile{display:flex;align-items:center;gap:20px}.demo-avatar{width:75px;height:75px;border-radius:50%;background:#dbc0ae;display:grid;place-items:center;color:#674c3e;font:normal 27px Georgia,serif}.demo-profile h4{margin:6px 0;font:normal 25px Georgia,serif}.demo-profile p{font-size:12px;margin:5px 0}.demo-profile span{font-size:11px;color:#64757f}.demo-footnote{font-size:11px;color:#697983}
 @media(max-width:780px){.studio-orbit{transform:none}.growth-upsell{padding:24px}.demo-stat-row,.demo-kanban{grid-template-columns:1fr}.preview-side{flex-direction:row;flex-wrap:wrap}.preview-side .demo-logo{width:100%;margin:0}.preview-side button{padding:9px}.demo-table>div{flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){.orbit-glow,.orbit-slide.orbit-in{animation:none}.studio-orbit{transform:none;transition:none}}
+
+/* 3.14 editorial premium refinement */
+.plan-landing-hero-copy>.primary{background:#d5a189!important;color:#19252b!important;border:0!important;border-radius:100px!important;padding:15px 27px!important;font-weight:800;letter-spacing:.045em;box-shadow:0 12px 35px #10191f55;transition:transform .25s,background .25s}
+.plan-landing-hero-copy>.primary:hover{transform:translateY(-2px);background:#e3b49d!important}
+.plan-landing-hero-copy>.outline{background:transparent!important;color:#f4efed!important;border:0!important;border-bottom:1px solid #d8b19b!important;border-radius:0!important;padding:12px 3px!important;margin-left:18px!important;min-height:44px;letter-spacing:.045em}
+.plan-landing-hero-copy>.outline:hover{color:#e3b49d!important}
+.plan-landing-hero-copy>.primary,.plan-landing-hero-copy>.outline{font-size:11px!important}
+.plan-anchorbar{border:0!important;box-shadow:none!important;background:transparent!important;border-bottom:1px solid #bfc6ca!important;border-radius:0!important;padding:19px 12px!important}
+.plan-anchorbar a{font-size:11px;letter-spacing:.025em}
+.plan-landing .editorial-benefits{grid-template-columns:repeat(2,minmax(0,1fr));gap:0;background:transparent;border-top:1px solid #b8c4c9;border-bottom:1px solid #b8c4c9}
+.plan-landing .editorial-benefits article{background:transparent;box-shadow:none;border:0;border-radius:0;border-right:1px solid #c0c9ce;border-bottom:1px solid #c0c9ce;padding:34px 34px 37px;min-height:204px;transition:background .25s}
+.plan-landing .editorial-benefits article:nth-child(even){border-right:0}
+.plan-landing .editorial-benefits article:nth-last-child(-n+2){border-bottom:0}
+.plan-landing .editorial-benefits article:hover{background:#f9fafaa8}
+.plan-landing .editorial-benefits .plan-benefit-icon{width:auto;height:auto;display:flex;align-items:center;gap:14px;background:none;color:#b77f63;border-radius:0;font:normal 14px Georgia,serif}
+.plan-landing .editorial-benefits .benefit-line{height:1px;width:65px;background:#ae7c64}
+.plan-landing .editorial-benefits h3{font-size:27px;margin:25px 0 11px}
+.plan-landing .editorial-benefits p{font-size:13px;line-height:1.85;max-width:480px}
+@media(max-width:700px){.plan-landing .editorial-benefits{grid-template-columns:1fr}.plan-landing .editorial-benefits article,.plan-landing .editorial-benefits article:nth-child(even){border-right:0;border-bottom:1px solid #c0c9ce;padding:28px 15px}.plan-landing .editorial-benefits article:last-child{border-bottom:0}.plan-landing-hero-copy>.outline{margin-left:5px!important}.plan-anchorbar{gap:13px!important}}

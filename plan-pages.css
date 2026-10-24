@@ -549,3 +549,12 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 
 /* Standalone plan pages */
 body{background:#e7e8e9}.plan-shell{max-width:1240px;margin:auto;padding:0 28px 75px}.plan-shell .plan-landing{display:block}.plan-public-header{background:#25292d;color:#f4f5f6;padding:18px max(25px,calc((100vw - 1180px)/2));display:flex;align-items:center;justify-content:space-between;gap:20px}.plan-public-header a{text-decoration:none}.plan-public-header .brand{font-size:19px}.plan-public-header nav{display:flex;gap:15px}.plan-public-header nav a{color:#d1d6d9;font-size:12px}.plan-public-footer{background:#25292d;text-align:center;padding:30px;color:#d6dddf}.plan-public-footer a{color:#f1c5b0}.plan-launch-note{margin:24px 0 5px;padding:20px 24px;background:#f7f8f8;border-left:3px solid #a77259;border-radius:6px;color:#53616a;font-size:13px;line-height:1.8}.plan-launch-note strong{color:#2d3a42}@media(max-width:650px){.plan-shell{padding:0 15px 45px}.plan-public-header{padding:17px;align-items:start;flex-direction:column}.plan-public-header nav{flex-wrap:wrap}.plan-landing-hero{border-radius:10px}}
+
+/* Public plan pages: visible CTA anchors, consistent with original buttons */
+.plan-shell a.primary,.plan-shell a.outline,.plan-shell a.text-link,.plan-shell a.page-link-button{display:inline-flex;align-items:center;justify-content:center;text-align:center;text-decoration:none;cursor:pointer}
+.plan-shell a.primary,.plan-shell a.outline{font-size:12px;line-height:1.5;vertical-align:middle}
+.plan-shell .plan-final-cta a{margin:5px}
+.plan-shell .plan-landing a:focus-visible,.plan-public-header a:focus-visible{outline:3px solid #c79578;outline-offset:4px}
+.plan-shell .plan-anchorbar{position:sticky;top:0;z-index:9;box-shadow:0 7px 15px #182a3412}
+.plan-shell .plan-section-intro,.plan-shell .plan-process-section,.plan-shell .plan-conditions,.plan-shell .plan-faq{scroll-margin-top:90px}
+@media(max-width:600px){.plan-shell .plan-anchorbar{position:relative;gap:10px}.plan-shell .plan-final-cta a{width:100%;margin:6px 0}}

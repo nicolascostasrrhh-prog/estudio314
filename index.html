@@ -386,6 +386,7 @@ async function displayAccount(){
  await loadPromotionWorkspaces();
  await refreshAdminDashboard();
  await loadMyDirectory();
+ await loadCrm();
 }
 
 function liveText(id,message){document.getElementById(id).textContent=message}
@@ -769,6 +770,49 @@ async function sendWorkFile(event){
  const save=await authClient.rpc('register_order_file',{p_order:workOrderId,p_path:path,p_name:file.name.slice(0,180)});
  if(save.error){workStatus('Se subió el archivo pero no se pudo registrar: '+save.error.message);return}
  input.value='';workStatus('Material guardado de forma privada.');await refreshWorkFiles();
+}
+
+
+const CRM_STAGES={nuevo:'Nuevo',contactado:'Contactado',reunion:'Reunión',propuesta:'Propuesta',ganado:'Concretado',cerrado:'Cerrado'};
+function crmDate(v){return v?String(v).slice(0,10):''}
+async function loadCrm(){
+ const box=document.getElementById('lawyer-crm');
+ const eligible=Boolean(authClient&&liveUser&&liveProfile?.is_verified&&['asociado','titular','distinguido','originario'].includes(liveProfile.category));
+ box.hidden=!eligible;if(!eligible)return;
+ const {data,error}=await authClient.from('crm_opportunities').select('id,contact_alias,practice_area,contact_method,stage,next_action,follow_up_on,created_at').eq('owner_id',liveUser.id).order('updated_at',{ascending:false}).limit(200);
+ const list=document.getElementById('crm-list'),summary=document.getElementById('crm-stats');
+ if(error){list.textContent='No se pudieron consultar tus contactos: '+error.message;return}
+ const active=data.filter(x=>!['ganado','cerrado'].includes(x.stage)).length;
+ const overdue=data.filter(x=>!['ganado','cerrado'].includes(x.stage)&&x.follow_up_on&&x.follow_up_on<new Date().toISOString().slice(0,10)).length;
+ summary.innerHTML='<div><strong>'+data.length+'</strong><span>Oportunidades (hasta 200)</span></div><div><strong>'+active+'</strong><span>Activas</span></div><div><strong>'+overdue+'</strong><span>Seguimientos vencidos</span></div>';
+ list.innerHTML=data.length?data.map(x=>'<article class="crm-card"><div class="live-head"><div><strong>'+escapeHTML(x.contact_alias)+'</strong><p>'+escapeHTML(x.practice_area)+' · '+escapeHTML(CRM_STAGES[x.stage]||x.stage)+'</p></div><button class="auth-secondary" type="button" onclick="showCrmHistory(\''+escapeHTML(x.id)+'\')">Historial ↗</button></div><p class="small muted">'+escapeHTML(x.next_action||'Sin siguiente acción')+(x.follow_up_on?' · Fecha: '+escapeHTML(x.follow_up_on):'')+'</p><div id="crm-history-'+escapeHTML(x.id)+'"></div>'+(['ganado','cerrado'].includes(x.stage)?'<p class="small muted">Oportunidad finalizada.</p>':'<div class="crm-edit"><select id="crm-stage-'+escapeHTML(x.id)+'">'+Object.entries(CRM_STAGES).map(([val,label])=>'<option value="'+val+'" '+(val===x.stage?'selected':'')+'>'+label+'</option>').join('')+'</select><input id="crm-action-'+escapeHTML(x.id)+'" maxlength="280" placeholder="Próxima acción" value="'+escapeHTML(x.next_action||'')+'"><input id="crm-followup-'+escapeHTML(x.id)+'" type="date" value="'+escapeHTML(crmDate(x.follow_up_on))+'"><textarea id="crm-note-'+escapeHTML(x.id)+'" maxlength="600" placeholder="Motivo del cambio (mínimo 5 caracteres)"></textarea><button type="button" class="outline" onclick="updateCrm(\''+escapeHTML(x.id)+'\')">Registrar seguimiento</button></div>')+'</article>').join(''):'<p class="small muted">Todavía no agregaste oportunidades.</p>';
+}
+async function createCrmContact(event){
+ event.preventDefault();if(!authClient||!liveUser||realBusy)return;
+ realBusy=true;const button=document.getElementById('crm-submit');button.disabled=true;
+ try{
+ const {error}=await authClient.rpc('create_crm_opportunity',{p_alias:document.getElementById('crm-alias').value.trim(),p_area:document.getElementById('crm-area').value.trim(),p_method:document.getElementById('crm-method').value.trim(),p_next:document.getElementById('crm-next').value.trim(),p_followup:document.getElementById('crm-date').value||null});
+ if(error)throw error;
+ document.getElementById('crm-form').reset();document.getElementById('crm-notice').textContent='Oportunidad registrada.';await loadCrm();
+ }catch(e){document.getElementById('crm-notice').textContent='No se pudo guardar: '+authErr(e)}
+ finally{realBusy=false;button.disabled=false}
+}
+async function updateCrm(id){
+ if(!authClient||!liveUser||realBusy)return;
+ const note=document.getElementById('crm-note-'+id)?.value.trim()||'';
+ if(note.length<5){document.getElementById('crm-notice').textContent='Escribí un fundamento breve (mínimo 5 caracteres).';return}
+ realBusy=true;
+ try{const {error}=await authClient.rpc('advance_crm_opportunity',{p_id:id,p_stage:document.getElementById('crm-stage-'+id).value,p_next:document.getElementById('crm-action-'+id).value.trim(),p_followup:document.getElementById('crm-followup-'+id).value||null,p_note:note});if(error)throw error;
+ document.getElementById('crm-notice').textContent='Seguimiento actualizado.';await loadCrm();
+ }catch(e){document.getElementById('crm-notice').textContent='No se pudo actualizar: '+authErr(e)}
+ finally{realBusy=false}
+}
+async function showCrmHistory(id){
+ if(!authClient||!liveUser)return;
+ const {data,error}=await authClient.from('crm_opportunity_events').select('old_stage,new_stage,note,occurred_at').eq('opportunity_id',id).order('occurred_at',{ascending:false}).limit(40);
+ const box=document.getElementById('crm-history-'+id);if(!box)return;
+ if(error){box.textContent='No se pudo cargar la actividad: '+error.message;return}
+ box.innerHTML=data.map(x=>'<div class="timeline-event"><b>'+escapeHTML(CRM_STAGES[x.new_stage]||x.new_stage)+'</b> · '+escapeHTML(new Date(x.occurred_at).toLocaleString('es-AR'))+'<p>'+escapeHTML(x.note)+'</p></div>').join('');
 }
 
 async function signOutAccount(){

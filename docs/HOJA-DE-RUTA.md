@@ -91,3 +91,11 @@ Se implementan directamente las mejoras técnicas no destructivas que no necesit
 - Código HTML/JS comprobado sintácticamente. Pendientes pruebas de UX en navegador (especialmente retorno del magic link, móvil y visibilidad de pestañas), pagos reales, notificaciones, reembolsos y cierre legal.
 
 - **Refinamiento final del panel:** el Centro de Administración se subdivide en Resumen, Miembros, Pedidos y Admisiones y ascensos; las consultas a Supabase conservan sus permisos existentes. Debe probarse la navegación visual desde una cuenta administradora real.
+
+## Entrega: página comercial de membresías y programa independiente de formación (24/10/2026)
+- `Membresías` reorganizada como landing visual, con dos proposiciones: **Conexión a plataforma y gestión** (acceso al marketplace, herramientas y comunidad) y **Membresía de crecimiento profesional** (la plataforma más créditos y servicios a demanda). No se publicaron precios ficticios.
+- **Trayectoria visible** en tarjeta de perfil. Requisitos, categorías, permanencia y avales trasladados a sección propia `Trayectoria` con detalle desplegable. No se confunde rango institucional con modalidad comercial.
+- `Estudiantes` ahora es una landing específica `#formacion`: universidad, año, materias aprobadas, estado curricular, rama jurídica, disponibilidad, motivación y CV PDF hasta 5 MB. La postulación exige inicio de sesión y consentimiento expreso; no equivale a contratación ni habilita ejercicio profesional.
+- Supabase: migración `20261024_021_student_applications.sql`, tabla `student_applications` con RLS, funciones de postulación y registro de CV; bucket privado `estudio314-student-cvs` con control de titular y administración; bandeja administrativa con enlaces firmados de 60 segundos.
+- `Olvidé mi contraseña` corregido: recuperación visible desde el acceso principal, correo propio independiente del formulario oculto y modo `PASSWORD_RECOVERY` que mantiene visible la entrada de nueva contraseña.
+- **Verificado:** 19 tablas públicas con RLS, bucket de CV privado, `anon` sin poder invocar registro de CV, sintaxis de 2 scripts OK; **pendiente:** prueba con correo real de recuperación, envío de postulación, carga/lectura PDF y QA móvil.

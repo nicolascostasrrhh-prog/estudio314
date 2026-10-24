@@ -948,7 +948,7 @@ function renderAdminRoster(){
 const ACCOUNT_TABS=[
  ['inicio','Resumen',['account-overview']],
  ['membresia','Membresía',['membership-ui','originario-workspace']],
- ['trabajo','Servicios',['service-brief','order-workspace','member-live-area']],
+ ['trabajo','Servicios',['service-brief','order-workspace','member-live-area','credit-shop']],
  ['creditos','Comprar créditos',['credit-shop']],
  ['contactos','CRM',['lawyer-crm']],
  ['perfil','Perfil público',['directory-editor']],
@@ -998,6 +998,40 @@ function showAccountTab(id){
  });
  if(id==='administracion'&&!isAdmin)id='inicio';
  document.querySelectorAll('.account-tab-panel').forEach(el=>{el.hidden=el.id!=='account-tab-'+id});
+}
+
+
+async function refreshCreditShop(){
+ const holder=document.getElementById('credit-shop');
+ if(!holder||!authClient||!liveUser)return;
+ const [packs,purchases,balance]=await Promise.all([
+ authClient.from('credit_packages').select('id,title,credits,price_ars').eq('active',true).order('price_ars',{ascending:true}),
+ authClient.from('credit_purchase_receipts').select('payment_id,amount_ars,credits,credited_at').eq('member_id',liveUser.id).order('credited_at',{ascending:false}).limit(15),
+ authClient.rpc('available_credits',{p_member:liveUser.id})
+ ]);
+ document.getElementById('credit-shop-balance').textContent=balance.error?'—':String(balance.data??0);
+ const list=document.getElementById('credit-packages');
+ if(packs.error){list.textContent='No se pudo cargar el catálogo: '+packs.error.message}
+ else if(!packs.data.length){list.innerHTML='<p class="credit-shop-empty">Los paquetes de créditos estarán disponibles cuando se configure Mercado Pago y se aprueben los precios. Por ahora no se procesan pagos.</p>'}
+ else {list.innerHTML=packs.data.map(p=>'<article class="credit-pack"><span>PAQUETE DE CRÉDITOS</span><h4>'+escapeHTML(p.title)+'</h4><strong>'+p.credits+' créditos</strong><p>'+new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(p.price_ars)+'</p><button class="primary" type="button" onclick="buyCreditPackage(\''+escapeHTML(p.id)+'\')">Pagar con Mercado Pago ↗</button></article>').join('')}
+ const movements=document.getElementById('credit-purchases');
+ if(purchases.error)movements.textContent='No se pudo consultar el historial: '+purchases.error.message;
+ else movements.innerHTML=purchases.data.length?purchases.data.map(p=>'<div class="credit-purchase-row"><b>+'+p.credits+' créditos</b><span>'+new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(p.amount_ars)+' · '+escapeHTML(new Date(p.credited_at).toLocaleDateString('es-AR'))+'</span><small>Compra confirmada</small></div>').join(''):'<p class="small muted">Todavía no hay compras acreditadas.</p>';
+}
+async function buyCreditPackage(packageId){
+ if(!authClient||!liveUser||realBusy)return;
+ const buttons=document.querySelectorAll('#credit-packages button');
+ buttons.forEach(b=>b.disabled=true);realBusy=true;
+ try{
+ const {data,error}=await authClient.functions.invoke('create-credit-checkout',{body:{package_id:packageId}});
+ if(error)throw error;
+ const url=data?.checkout_url;
+ if(typeof url!=='string'||!/^https:\/\/(www\.)?mercadopago\.com(\.ar)?\//.test(url))throw new Error('El enlace de pago no pudo verificarse.');
+ window.location.assign(url);
+ }catch(err){
+ const note=document.getElementById('credit-packages');
+ const message=document.createElement('p');message.className='small muted';message.textContent='No se pudo iniciar la compra: '+authErr(err);note.appendChild(message);
+ }finally{realBusy=false;buttons.forEach(b=>b.disabled=false)}
 }
 
 async function signOutAccount(){

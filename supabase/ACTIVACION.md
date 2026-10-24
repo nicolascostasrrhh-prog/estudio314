@@ -72,3 +72,14 @@ Se aplicó la quinta migración `estudio314_operational_indexes` (siete índices
 - El estado y las resoluciones quedan consultables para el profesional. Los números de matrícula se restringen por RLS al titular y administradores.
 - Verificado: 9 tablas, RLS habilitado en todas, 7 migraciones, JS sin errores de sintaxis. **No** se completó un registro y revisión de un usuario real porque todavía no hay cuentas registradas ni administradores aprovisionados.
 - Pendiente de producción: proceso de verificación de matrícula, reglas y aceptación de términos, privacidad y consentimiento, panel de administrador constituido, sistema de cuotas/facturas/beneficios y pruebas end-to-end con usuarios autorizados.
+
+## Centro de Administración — 23/10/2026
+
+Se incorporó a **Mi cuenta** un tablero exclusivo para administradores autorizados mediante `is_platform_admin`. Consulta Supabase para mostrar cantidades de miembros, admisiones pendientes, ascensos pendientes y pedidos abiertos; incluye distribución de categorías, últimos perfiles y pedidos recientes.
+
+- No crea, modifica ni elimina créditos. No activa precios o cobros.
+- Se limita a 8 perfiles recientes, 12 pedidos recientes y 1.000 filas para el desglose por categoría (muestra advertencia si la distribución es parcial). Los conteos totales se solicitan separadamente.
+- La interfaz se oculta para usuarios sin autorización y, además, las políticas RLS del servidor limitan la lectura de perfiles y pedidos.
+- Verificación: los usuarios anónimos no pueden consultar filas de perfiles ni pedidos; la consulta anónima de solicitudes de membresía fue **denegada por falta de permisos**, como se esperaba.
+- Se revisaron advertencias de Supabase sobre funciones `SECURITY DEFINER`; siguen pendientes las pruebas de autorización con usuarios reales antes de habilitar operaciones productivas.
+- **Limitación:** todavía no existe una cuenta administradora aprovisionada, por lo que la vista completa no se probó con un administrador real.

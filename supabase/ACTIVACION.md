@@ -48,8 +48,16 @@
 
 ## Auditoría efectuada en Supabase
 
-- Fecha 23/10/2026: 8 tablas, 4 migraciones, RLS habilitado en todas las tablas.
+- Fecha 23/10/2026: 8 tablas, 5 migraciones, RLS habilitado en todas las tablas.
 - Se verificó que `anon` no puede ejecutar el trigger de registro ni hacer TRUNCATE de perfiles. Tampoco el rol `authenticated` puede truncar créditos.
 - La auditoría aún informa advertencias sobre funciones `SECURITY DEFINER` autenticadas: son puntos controlados por validaciones de identidad y categoría, pero **requieren pruebas de autorización de extremo a extremo antes de abrir al público**.
 - `platform_admins` no tiene política de lectura por diseño: ni usuarios normales ni clientes públicos pueden listar administradores.
 - No se han asignado permisos administrativos ni créditos reales a ningún usuario.
+
+## Avance de interfaz del 23/10/2026
+
+La sección **Mi cuenta** ya tiene lectura autenticada de perfil, categoría y saldo, además de consulta de postulaciones, pedidos y servicios activos. Puede llamar al procedimiento real `request_promotion` si se cumplen requisitos de permanencia y verificación, o `request_service` si hay servicios activos y créditos suficientes. **No hay aún miembros verificados ni servicios activos**: la plataforma real no habilita contrataciones prematuras.
+
+Se aplicó la quinta migración `estudio314_operational_indexes` (siete índices para FKs) y se comprobó el proyecto `ACTIVE_HEALTHY` con 8 tablas y RLS. Se verificó además que una consulta sin autenticación no recibe filas de perfiles ni pedidos.
+
+**Pendientes:** establecer/comprobar `Authentication → URL Configuration`, confirmar entrega efectiva del correo y registro con un usuario autorizado; validar revisión de matrícula, panel administrativo, solicitudes con avales reales y tarifas/beneficios económicos. La auditoría de `SECURITY DEFINER` necesita pruebas de autorización funcional antes de abrir el sistema masivamente.

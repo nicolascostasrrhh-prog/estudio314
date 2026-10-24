@@ -107,3 +107,11 @@ Se implementan directamente las mejoras técnicas no destructivas que no necesit
 - Estudiante: consulta de su estado desde la landing de Formación; sin acceso a notas administrativas ni seguimiento interno.
 - **Pruebas verificadas en SQL con rollback:** creación de postulación, autorización de cuenta admin, imposibilidad de aprobación con cuenta común, visibilidad del estado, ocultamiento de auditoría al aspirante y rechazo de modificación curricular durante la revisión. No se guardaron datos de ensayo.
 - **Pendiente** para producción: prueba desde navegador con PDF real no sensible; políticas de retención, eliminación de CV y privacidad estudiantil; revisión legal/laboral del programa antes de aceptar candidatos externos; comunicación de estado mediante canales autorizados, si se decide implementarla.
+
+## Catálogo visual y seguimiento de servicios — entrega 24/10/2026
+- Catálogo demostrativo con tarjetas visuales, búsqueda por texto y filtro por categoría; sigue etiquetado como **ilustrativo**, sin cobros.
+- Catálogo real `service_catalog`: tarjetas con categoría opcional (`scope.category`), filtros, descripción y costo de créditos vigente. Ficha de servicio con `scope.includes`, `scope.requires`, `scope.excludes` cuando estén informados. Si esos campos faltan, la pantalla lo indica y no inventa entregables.
+- Pedido real: ficha/brief por objetivo, consulta del saldo en servidor y resumen de costo y créditos disponibles antes de confirmar. Saldo insuficiente bloquea la confirmación y ofrece acceso a la billetera. La RPC `request_service` sigue haciendo la reserva atómica con bloqueo del miembro.
+- Seguimiento: pedidos en tarjetas con etapas Solicitada → En revisión → En proceso → Entregada; cancelaciones diferenciadas; acceso a historial, mensajes y archivos.
+- Verificaciones: funciones JavaScript compiladas sin errores, 20 tablas públicas con RLS, 0 servicios reales en el catálogo (sin precios aprobados, por lo que la contratación sigue inactiva). No se insertaron precios ni servicios ficticios en Supabase.
+- Próximos bloqueos comerciales: acordar la ficha final, alcance y costo real de cada servicio, pruebas entre operador y miembro, carga de un primer servicio aprobado y Mercado Pago en entorno de prueba.

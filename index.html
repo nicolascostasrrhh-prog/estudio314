@@ -324,6 +324,45 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 .student-my-status strong{display:block;font-weight:800}
 .student-my-status p{margin:6px 0 0;font-size:12px;line-height:1.6}
 @media(max-width:800px){.student-review-actions{grid-template-columns:1fr}.student-admin-header{flex-wrap:wrap}.student-review-toolbar>span{margin-left:0}}
+
+/* Catálogo de servicios · experiencia de software */
+.studio-services-toolbar{display:grid;grid-template-columns:minmax(0,2fr) minmax(165px,1fr);gap:13px;padding:17px;background:#f2f5f6;border:1px solid #d8e1e5;border-radius:11px;margin:15px 0}
+.studio-services-toolbar label{display:block;font-size:10px;font-weight:800;letter-spacing:.05em;color:#5e707c;margin-bottom:7px}
+.studio-services-toolbar input,.studio-services-toolbar select{width:100%;padding:12px 13px;background:#fff;border:1px solid #cbd7de;border-radius:8px;font:12px Inter,Manrope,Arial,sans-serif;color:#2c414d}
+#services.catalog-list,#live-services.real-service-list{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;align-items:stretch;margin:18px 0 27px}
+.studio-service-card{display:flex;flex-direction:column;min-width:0;min-height:300px;background:white;border:1px solid #dee5e9;border-radius:12px;overflow:hidden;box-shadow:0 7px 24px #152a350a;transition:transform .2s,border-color .2s}
+.studio-service-card:hover{transform:translateY(-3px);border-color:#b67b63}
+.studio-service-art{height:98px;background:linear-gradient(115deg,#2b3740 0%,#52626d 100%);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:12px 22px}
+.studio-service-art span{font:55px Georgia,serif;color:#d6a18a}
+.studio-service-art small{max-width:140px;text-align:right;color:#bac7ce;letter-spacing:.1em;line-height:1.5;font-size:9px;font-weight:800}
+.studio-service-body{padding:20px;display:flex;flex:1;flex-direction:column}
+.studio-service-kicker{color:#bb7659;letter-spacing:.1em;text-transform:uppercase;font-size:9px;font-weight:800}
+.studio-service-body h4{font:600 24px Georgia,serif;line-height:1.16;margin:10px 0 9px;color:#2b3942}
+.studio-service-body>p{font-size:12px;color:#657783;line-height:1.65;margin:0 0 16px;flex:1}
+.studio-service-bottom{display:flex;align-items:center;justify-content:space-between;gap:9px;border-top:1px solid #e9edef;padding-top:15px}
+.studio-service-bottom span{font-weight:800;font-size:14px;color:#354953}
+.studio-service-bottom span small{display:block;font-size:9px;color:#83949e;font-weight:500}
+.studio-service-bottom button{font-size:11px;padding:9px 11px}
+.studio-empty-state{background:#f0f4f5;padding:30px;border:1px dashed #b7c6cd;border-radius:10px;color:#546c77;grid-column:1/-1;line-height:1.7}
+.studio-empty-state strong{display:block;font:600 24px Georgia,serif;color:#354b55;margin-bottom:9px}
+.studio-empty-state p{font-size:13px}
+.studio-real-detail{background:#fff;border:1px solid #cbd8de;border-radius:12px;padding:25px;margin:24px 0;box-shadow:0 10px 25px #1d33420a}
+.studio-real-detail[hidden]{display:none}
+.studio-detail-top,.studio-detail-checkout{display:flex;justify-content:space-between;align-items:center;gap:15px}
+.studio-real-detail h3{font:normal 32px Georgia,serif;color:#253945;margin:13px 0}
+.studio-real-detail>p{color:#607581;max-width:720px;font-size:13px;line-height:1.65}
+.studio-detail-columns{display:grid;grid-template-columns:1fr 1fr;gap:25px;margin:21px 0}
+.studio-detail-columns section{background:#f3f6f7;border-radius:9px;padding:19px}
+.studio-detail-columns h4{font-size:13px;color:#334a56;margin:0 0 12px}
+.studio-detail-columns ul{padding-left:20px;color:#5b6c75;line-height:1.8;font-size:12px}
+.studio-detail-columns p{font-size:12px;color:#6b7d86;line-height:1.65}
+.studio-detail-checkout{padding-top:18px;border-top:1px solid #e4e9eb}
+.studio-detail-checkout small,.studio-brief-summary span{display:block;color:#82909a;font-size:10px;font-weight:800;letter-spacing:.06em}
+.studio-detail-checkout strong{display:block;font-size:22px;color:#354953;margin-top:4px}
+.studio-brief-summary{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:15px 0;padding:18px;background:#eef3f5;border-radius:10px}
+.studio-brief-summary strong{display:block;margin-top:4px;font:800 18px Inter,Manrope,Arial,sans-serif;color:#31434e}
+.studio-brief-summary>p{grid-column:1/-1;margin:2px 0 0;font-size:12px;color:#4b6470}
+@media(max-width:700px){.studio-services-toolbar,.studio-detail-columns{grid-template-columns:1fr}.studio-service-bottom{flex-wrap:wrap}.studio-brief-summary{grid-template-columns:1fr}.studio-brief-summary>p{grid-column:auto}}
 </style></head><body>
 <header><div class="brand">ESTUDIO <span>3.14</span></div><nav aria-label="Secciones"><button onclick="go('inicio')">Inicio</button><button onclick="go('buscar')">Buscar abogado</button><button onclick="go('membresias')">Membresías</button><button onclick="go('panel')">Panel de miembro</button><button onclick="go('formacion')">Estudiantes</button><button class="nav-account" onclick="go('cuenta')">Mi cuenta ↗</button></nav></header>
 <main>

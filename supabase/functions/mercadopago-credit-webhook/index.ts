@@ -35,9 +35,7 @@ Deno.serve(async(req)=>{
  if(intent.expected_amount_ars!==payment.transaction_amount)return respond("Monto distinto",400);
  if(intent.provider_preference_id&&String(payment.preference_id||"")!==String(intent.provider_preference_id))return respond("Preferencia distinta",400);
  if(intent.status==="credited")return respond(intent.payment_id===dataId?"Compra ya acreditada":"Conflicto de pago",intent.payment_id===dataId?200:409);
- const {data:receipt,error:creditError}=await sb.rpc("credit_verified_mercadopago_payment",{p_payment_id:dataId,p_member:intent.member_id,p_package:intent.package_id,p_amount_ars:intent.expected_amount_ars});
+ const {data:receipt,error:creditError}=await sb.rpc("credit_verified_checkout_intent",{p_intent:intent.id,p_payment_id:dataId,p_amount_ars:intent.expected_amount_ars});
  if(creditError||!receipt)return respond("Acreditación no confirmada",500);
- const updated=await sb.from("credit_checkout_intents").update({status:"credited",payment_id:dataId,credited_at:new Date().toISOString()}).eq("id",intent.id).eq("status","pending");
- if(updated.error)return respond("Pago acreditado, sincronización pendiente",500);
  return respond("Créditos acreditados");
 });

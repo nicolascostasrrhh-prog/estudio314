@@ -115,3 +115,11 @@ Se implementan directamente las mejoras técnicas no destructivas que no necesit
 - Seguimiento: pedidos en tarjetas con etapas Solicitada → En revisión → En proceso → Entregada; cancelaciones diferenciadas; acceso a historial, mensajes y archivos.
 - Verificaciones: funciones JavaScript compiladas sin errores, 20 tablas públicas con RLS, 0 servicios reales en el catálogo (sin precios aprobados, por lo que la contratación sigue inactiva). No se insertaron precios ni servicios ficticios en Supabase.
 - Próximos bloqueos comerciales: acordar la ficha final, alcance y costo real de cada servicio, pruebas entre operador y miembro, carga de un primer servicio aprobado y Mercado Pago en entorno de prueba.
+
+## Catálogo comercial: fichas en borrador privadas (24/10/2026)
+- Nueva migración `20261024_024_service_drafts.sql`, aplicada. Tabla `service_catalog_drafts` con RLS, visible solo al administrador mediante `is_platform_admin(auth.uid())`; escritura a través de RPC `save_service_catalog_draft` con controles de autorización y tamaño de datos.
+- Se importaron **8 fichas preliminares** del catálogo de demostración: contenido visual, video/reel, programación de redes, paquete combinado, WhatsApp Business, Meta Ads, organización de consultas/CRM y consultoría de gestión. Se conservaron textos, entregables, requisitos y exclusiones para revisión editorial.
+- **No se importaron los créditos ilustrativos** como costos reales. Los ocho `credit_cost` permanecen nulos y `ready_for_review=false`. No se agregaron servicios activos al catálogo comercial real.
+- En `Mi cuenta → Administración → Catálogo` se muestran tarjetas con un editor para nombre, categoría, descripción, incluye, necesita del cliente, exclusiones, créditos propuestos y observaciones internas. Guardar no publica ni habilita cobros.
+- Comprobaciones reales: cuenta administradora ve 8 fichas; usuario no administrador ve 0; RPC de edición con identidad administradora funciona dentro de transacción revertida; 0 precios reales, 0 fichas aprobadas. Scripts frontend sintácticamente válidos.
+- Siguiente paso de decisión comercial: fijar créditos y alcances de cada servicio, definir SLA/plazos, número de revisiones, requisitos de aprobación de cliente y política de cambios. Solo después activar servicios reales y ensayar pedidos de extremo a extremo.

@@ -642,6 +642,7 @@ async function displayAccount(){
  document.getElementById('auth-forms').hidden=Boolean(user);
  document.getElementById('account-profile').hidden=!user;
  if(!user){liveProfile=null;liveUser=null;authText('Ingresá o registrate para acceder a tu cuenta.');return}
+ if(passwordRecoveryFlow){document.getElementById('auth-forms').hidden=false;document.getElementById('account-profile').hidden=true;return}
  createAccountTabs();
  document.getElementById('account-email').textContent=user.email||'';
  const {data:profile,error:profileError}=await authClient.from('member_profiles').select('display_name,category,is_verified,subscription,member_since').eq('user_id',user.id).maybeSingle();
@@ -1438,13 +1439,14 @@ async function signOutAccount(){
  if(error){authText('No pudimos cerrar la sesión: '+authErr(error));return}
  await displayAccount();
 }
+let passwordRecoveryFlow=false;
 async function saveNewPassword(){
  if(!authClient){authText('No hay conexión configurada.');return}
  const password=document.getElementById('new-password').value;
  if(password.length<8){authText('La contraseña debe tener al menos 8 caracteres.');return}
  const {error}=await authClient.auth.updateUser({password});
  authText(error?'No se pudo actualizar: '+authErr(error):'Contraseña actualizada. Podés usarla para ingresar.');
- if(!error){document.getElementById('password-recovery').hidden=true;document.getElementById('new-password').value='';}
+ if(!error){passwordRecoveryFlow=false;document.getElementById('password-recovery').hidden=true;document.getElementById('new-password').value='';await displayAccount();go('cuenta');}
 }
 function openResetPassword(){
  const panel=document.getElementById('reset-email-panel');panel.hidden=false;
@@ -1468,7 +1470,7 @@ async function resetPassword(){
 if(authReady){
  authClient=window.supabase.createClient(authCfg.url,authCfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
  authText('Servicio de autenticación conectado. Podés ingresar o registrarte.');
- authClient.auth.onAuthStateChange((event)=>{if(event==='SIGNED_IN'){go('cuenta');}else if(event==='INITIAL_SESSION' && new URLSearchParams(location.search).has('cuenta')){go('cuenta');history.replaceState(null,'',location.pathname);}if(event==='PASSWORD_RECOVERY'){go('cuenta');document.getElementById('auth-forms').hidden=false;document.getElementById('account-profile').hidden=true;document.querySelector('.auth-password-details').open=true;document.getElementById('password-recovery').hidden=false;authText('Elegí y guardá tu nueva contraseña.');}else{setTimeout(()=>displayAccount(),0)}});
+ authClient.auth.onAuthStateChange((event)=>{if(event==='SIGNED_IN'){go('cuenta');}else if(event==='INITIAL_SESSION' && new URLSearchParams(location.search).has('cuenta')){go('cuenta');history.replaceState(null,'',location.pathname);}if(event==='PASSWORD_RECOVERY'){passwordRecoveryFlow=true;go('cuenta');document.getElementById('auth-forms').hidden=false;document.getElementById('account-profile').hidden=true;document.querySelector('.auth-password-details').open=true;document.getElementById('password-recovery').hidden=false;authText('Elegí y guardá tu nueva contraseña.');}else{setTimeout(()=>{if(!passwordRecoveryFlow)displayAccount()},0)}});
  if(new URLSearchParams(location.search).has('cuenta'))go('cuenta');
  displayAccount();
 }else{

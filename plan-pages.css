@@ -580,3 +580,28 @@ body{background:#e7e8e9}.plan-shell{max-width:1240px;margin:auto;padding:0 28px 
 .capability-grid small{font-size:11px;color:#7b6e65;line-height:1.6}
 .capability-disclaimer{font-size:12px;color:#65757f;margin:0;padding:0 26px 27px}
 @media(max-width:680px){.capability-summary,.capability-grid{grid-template-columns:1fr}.capability-grid{padding:13px}.capability-details>summary{padding:18px}.capability-context{padding:18px 18px 0}}
+
+/* Commercial value narrative and safe public dashboard modal */
+.value-visual{gap:10px}.value-visual .plan-display-tile{padding:14px 17px}
+.preview-dialog{width:min(1000px,calc(100vw - 32px));max-height:min(92vh,900px);border:0;border-radius:18px;padding:0;background:#f3f5f6;color:#2b3942;box-shadow:0 28px 95px #1119;overflow:auto}
+.preview-dialog::backdrop{background:#131b23bd;backdrop-filter:blur(4px)}
+.preview-top{display:flex;justify-content:space-between;align-items:start;gap:16px;padding:27px 30px;background:white}
+.preview-top h2{font:normal clamp(26px,3vw,38px) Georgia,serif;margin:8px 0}
+.preview-close{background:#e8ecee;border:0;border-radius:50%;height:42px;width:42px;font-size:25px}
+.preview-layout{display:grid;grid-template-columns:190px minmax(0,1fr);min-height:360px}
+.preview-layout aside{background:#263139;color:#cdd7dc;padding:27px 19px;display:flex;gap:18px;flex-direction:column;font-size:12px}
+.preview-layout aside b{font:normal 30px Georgia,serif;color:#d4a58b;margin-bottom:22px}
+.preview-workspace{padding:26px}
+.preview-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.preview-kpis article{background:white;border:1px solid #dce3e7;border-radius:10px;padding:18px}
+.preview-kpis small{color:#a97459;font-size:9px;letter-spacing:.12em;font-weight:800}
+.preview-kpis strong{display:block;font:normal 20px Georgia,serif;margin:10px 0;color:#2b3c44}
+.preview-kpis p{font-size:11px;color:#677882}
+.preview-workflow{background:white;border:1px solid #dce3e7;border-radius:10px;padding:20px;margin-top:14px}
+.preview-workflow h3{font:normal 25px Georgia,serif;margin:0 0 8px}
+.preview-workflow p{color:#5b6c76;font-size:12px}
+.preview-workflow>div{display:flex;justify-content:space-between;gap:12px;background:#f0f3f4;padding:15px;color:#495e68;font-size:11px;font-weight:700}
+.preview-legal{font-size:11px;color:#71818a}
+.preview-bottom{display:flex;justify-content:flex-end;gap:10px;background:white;padding:16px 29px}
+.preview-bottom a{text-decoration:none;display:inline-flex;align-items:center}
+@media(max-width:680px){.preview-layout{grid-template-columns:1fr}.preview-layout aside{flex-direction:row;flex-wrap:wrap;gap:8px;padding:16px}.preview-layout aside b{width:100%;margin:0}.preview-kpis{grid-template-columns:1fr}.preview-top,.preview-workspace{padding:18px}.preview-bottom{flex-wrap:wrap}.preview-bottom>*{flex:1}}

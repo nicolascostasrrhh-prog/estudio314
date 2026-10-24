@@ -479,6 +479,42 @@ function authTab(mode){
  document.getElementById('auth-password').setAttribute('autocomplete',mode==='register'?'new-password':'current-password');
  document.getElementById('auth-submit').textContent=mode==='register'?'Solicitar registro ↗':'Ingresar a mi cuenta ↗';
 }
+
+async function submitStudentApplication(event){
+ event.preventDefault();
+ const status=document.getElementById('student-status'),button=document.getElementById('st-submit');
+ if(!authClient){status.textContent='No hay conexión de registro disponible.';return}
+ const {data:{user},error:authError}=await authClient.auth.getUser();
+ if(authError||!user){status.textContent='Primero iniciá sesión en Mi cuenta con tu correo. Luego volvé a Estudiantes para enviar tu postulación.';return}
+ if(!document.getElementById('st-consent').checked){status.textContent='Debés autorizar el tratamiento de datos para la postulación.';return}
+ const file=document.getElementById('st-cv').files?.[0];
+ if(file&&(file.size>5242880||file.type!=='application/pdf'||!file.name.toLowerCase().endsWith('.pdf'))){status.textContent='El CV debe ser un PDF de hasta 5 MB.';return}
+ button.disabled=true;status.textContent='Guardando tu postulación...';
+ try{
+ const {data:id,error}=await authClient.rpc('submit_student_application',{
+ p_name:document.getElementById('st-name').value.trim(),
+ p_university:document.getElementById('st-university').value.trim(),
+ p_year:Number(document.getElementById('st-year').value),
+ p_subjects:Number(document.getElementById('st-subjects').value),
+ p_summary:document.getElementById('st-summary').value.trim(),
+ p_practice:document.getElementById('st-practice').value,
+ p_motivation:document.getElementById('st-motivation').value.trim(),
+ p_availability:document.getElementById('st-availability').value.trim()
+ });
+ if(error)throw error;
+ if(file){
+  status.textContent='Postulación guardada. Adjuntando CV...';
+  const path=user.id+'/'+crypto.randomUUID().replaceAll('-','')+'.pdf';
+  const upload=await authClient.storage.from('estudio314-student-cvs').upload(path,file,{contentType:'application/pdf',upsert:false});
+  if(upload.error)throw new Error('Postulación guardada, pero no se pudo adjuntar el CV: '+upload.error.message);
+  const registry=await authClient.rpc('register_student_cv',{p_path:path});
+  if(registry.error)throw new Error('CV cargado pero no asociado: '+registry.error.message);
+ }
+ status.textContent='✓ Postulación recibida. Te contactaremos si tu perfil coincide con oportunidades de formación. No implica selección automática.';
+ }catch(e){status.textContent='No se pudo completar todo el proceso: '+authErr(e)}
+ finally{button.disabled=false}
+}
+
 async function sendMagicLink(event){
  event.preventDefault();
  const button=document.getElementById('magic-send'),note=document.getElementById('magic-message');

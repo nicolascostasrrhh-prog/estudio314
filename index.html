@@ -668,26 +668,41 @@ async function showOrderTimeline(id){
 async function loadPublicLawyers(){
  const status=document.getElementById('public-lawyers-status'),out=document.getElementById('real-lawyers');
  if(!authClient){status.textContent='El directorio real no está disponible en este momento.';return}
- const {data,error}=await authClient.from('lawyer_directory_profiles').select('display_name,province,locality,specialty,bio').eq('visible',true).order('display_name').limit(80);
+ const {data,error}=await authClient.from('lawyer_directory_profiles')
+ .select('display_name,province,locality,specialty,bio,years_experience')
+ .eq('visible',true).order('display_name').limit(200);
  if(error){status.textContent='No se pudo consultar el directorio: '+error.message;out.textContent='';return}
- const term=document.getElementById('esp').value.toLocaleLowerCase('es-AR');
- const province=document.getElementById('jur').value.toLocaleLowerCase('es-AR');
- const shown=(data||[]).filter(x=>(!term||x.specialty.toLocaleLowerCase('es-AR').includes(term))&&(!province||x.province.toLocaleLowerCase('es-AR')===province));
- status.textContent=data.length?'Profesionales verificados que autorizaron su publicación. La lista se consulta desde Supabase; no indica recomendaciones ni garantías.':'Todavía no hay abogados reales con perfil público autorizado. Los perfiles inferiores son ficticios.';
- out.innerHTML=shown.map(x=>'<article class="lawyer-card"><div class="lawyer-avatar" aria-hidden="true">'+escapeHTML(x.display_name.charAt(0))+'</div><div><span class="tag">PROFESIONAL VERIFICADO</span><h3>'+escapeHTML(x.display_name)+'</h3><p>'+escapeHTML(x.specialty)+' · '+escapeHTML(x.locality)+', '+escapeHTML(x.province)+'</p><p>'+escapeHTML(x.bio||'Perfil institucional autorizado.')+'</p></div></article>').join('');
+ const normalize=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+ const term=normalize(document.getElementById('esp').value),province=normalize(document.getElementById('jur').value);
+ const search=normalize(document.getElementById('lawyer-text-search').value);
+ const locality=normalize(document.getElementById('lawyer-locality-search').value);
+ const experience=Number(document.getElementById('lawyer-min-experience').value)||0;
+ const shown=(data||[]).filter(x=>
+ (!term||normalize(x.specialty).includes(term))&&
+ (!province||normalize(x.province)===province)&&
+ (!search||normalize(x.display_name+' '+x.specialty).includes(search))&&
+ (!locality||normalize(x.locality).includes(locality))&&
+ (!experience||(x.years_experience!=null&&x.years_experience>=experience))
+ );
+ status.textContent=!data.length?'Todavía no hay abogados reales con publicación autorizada. Debajo se muestran perfiles ficticios.':
+ 'Encontrados: '+shown.length+' entre los primeros '+data.length+' perfiles publicados.'+
+ (data.length===200?' Hay más resultados posibles; esta vista muestra como máximo 200 perfiles.':'')+
+ ' La experiencia se declara por el profesional, sin verificación independiente.';
+ out.innerHTML=shown.length?shown.map(x=>'<article class="lawyer-card"><div class="lawyer-avatar" aria-hidden="true">'+escapeHTML(x.display_name.charAt(0))+'</div><div><span class="tag">MATRÍCULA VALIDADA · PERFIL PÚBLICO</span><h3>'+escapeHTML(x.display_name)+'</h3><p>'+escapeHTML(x.specialty)+' · '+escapeHTML(x.locality)+', '+escapeHTML(x.province)+'</p>'+(x.years_experience!=null?'<p>'+x.years_experience+' años de ejercicio (declarados)</p>':'')+'<p>'+escapeHTML(x.bio||'Perfil institucional autorizado.')+'</p></div></article>').join(''):'<p class="small muted">No hay perfiles publicados que coincidan con esta búsqueda.</p>';
 }
 async function loadMyDirectory(){
  const block=document.getElementById('directory-editor');
  const eligible=Boolean(liveUser&&liveProfile?.is_verified&&['asociado','titular','distinguido','originario'].includes(liveProfile.category));
  block.hidden=!eligible;
  if(!eligible)return;
- const {data,error}=await authClient.from('lawyer_directory_profiles').select('display_name,province,locality,specialty,bio,visible').eq('user_id',liveUser.id).maybeSingle();
+ const {data,error}=await authClient.from('lawyer_directory_profiles').select('display_name,province,locality,specialty,bio,visible,years_experience').eq('user_id',liveUser.id).maybeSingle();
  if(error){document.getElementById('dir-feedback').textContent='No se pudo cargar tu perfil: '+error.message;return}
  document.getElementById('dir-name').value=data?.display_name||liveProfile?.display_name||'';
  document.getElementById('dir-province').value=data?.province||'';
  document.getElementById('dir-locality').value=data?.locality||'';
  document.getElementById('dir-specialty').value=data?.specialty||'';
  document.getElementById('dir-bio').value=data?.bio||'';
+ document.getElementById('dir-experience').value=data?.years_experience??'';
  document.getElementById('dir-visible').checked=Boolean(data?.visible);
  document.getElementById('dir-feedback').textContent=data?.visible?'Tu perfil está configurado para aparecer en el directorio.':'Tu perfil no es público hasta que autorices su publicación.';
 }
@@ -705,6 +720,12 @@ async function saveMyDirectory(event){
    p_visible:document.getElementById('dir-visible').checked
   });
   if(error)throw error;
+  const exp=document.getElementById('dir-experience').value;
+  if(exp!=='' && (!Number.isInteger(Number(exp))||Number(exp)<0||Number(exp)>75))throw new Error('Ingresá años de experiencia entre 0 y 75.');
+  if(exp!==''){
+   const update=await authClient.rpc('set_my_lawyer_experience',{p_years:Number(exp)});
+   if(update.error)throw update.error;
+  }
   document.getElementById('dir-feedback').textContent=document.getElementById('dir-visible').checked?'Perfil guardado y autorizado para su publicación.':'Perfil guardado de forma privada.';
   await loadPublicLawyers();
  }catch(e){document.getElementById('dir-feedback').textContent='No se pudo guardar: '+authErr(e)}

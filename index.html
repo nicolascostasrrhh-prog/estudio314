@@ -155,7 +155,7 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 #account-tab-panels>.account-tab-panel{animation:account-in .18s ease-out}
 @keyframes account-in{from{opacity:.6;transform:translateY(5px)}to{opacity:1;transform:none}}
 @media(max-width:600px){.credit-shop-balance{padding:17px}.credit-shop-balance strong{font-size:30px}}
-.account-welcome h3{font:800 23px Manrope,Arial,sans-serif;margin:0 0 6px}.account-welcome p{margin:0 0 17px;color:#61747f;font-size:13px}.account-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:18px}.account-shortcut{padding:20px 18px;text-align:left;border:1px solid #d6e0e3;background:#fff;border-radius:11px;display:grid;gap:6px;cursor:pointer;transition:border-color .2s,transform .2s;color:#2b3b45}.account-shortcut:hover{border-color:#7999a7;transform:translateY(-2px)}.account-shortcut strong{font:800 15px Manrope,Arial,sans-serif}.account-shortcut span{font-size:11px;color:#627885}@media(max-width:580px){.account-shortcuts{grid-template-columns:1fr}}</style></head><body>
+.account-welcome h3{font:800 23px Manrope,Arial,sans-serif;margin:0 0 6px}.account-welcome p{margin:0 0 17px;color:#61747f;font-size:13px}.account-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:18px}.account-shortcut{padding:20px 18px;text-align:left;border:1px solid #d6e0e3;background:#fff;border-radius:11px;display:grid;gap:6px;cursor:pointer;transition:border-color .2s,transform .2s;color:#2b3b45}.account-shortcut:hover{border-color:#7999a7;transform:translateY(-2px)}.account-shortcut strong{font:800 15px Manrope,Arial,sans-serif}.account-shortcut span{font-size:11px;color:#627885}@media(max-width:580px){.account-shortcuts{grid-template-columns:1fr}}.admin-inner-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 16px;padding:9px;background:#293b46;border:1px solid #526c7a;border-radius:10px}.admin-inner-tabs button{flex:1;min-width:140px;padding:12px 11px;color:#bdced7;background:transparent;border:1px solid transparent;border-radius:7px;cursor:pointer;font:800 12px Manrope,Arial,sans-serif}.admin-inner-tabs button.is-active{background:#e9f1f3;color:#304653}.admin-view[hidden]{display:none!important}.admin-view{padding:2px}.admin-view>.admin-command-pane{margin:0}.admin-view>.membership-enrollment{background:#eef3f5;color:#293e49;border-radius:8px;margin-top:16px;padding:18px}.admin-view .admin-command-grid{grid-template-columns:1fr 1fr}@media(max-width:760px){.admin-inner-tabs button{min-width:calc(50% - 8px)}.admin-view .admin-command-grid{grid-template-columns:1fr}}</style></head><body>
 <header><div class="brand">ESTUDIO <span>3.14</span></div><nav aria-label="Secciones"><button onclick="go('inicio')">Inicio</button><button onclick="go('buscar')">Buscar abogado</button><button onclick="go('membresias')">Membresías</button><button onclick="go('panel')">Panel de miembro</button><button onclick="go('avales')">Avales</button><button class="nav-account" onclick="go('cuenta')">Mi cuenta ↗</button></nav></header>
 <main>
 <section id="inicio" class="active">
@@ -1025,6 +1025,7 @@ function createAccountTabs(){
  const before=document.getElementById('account-email');
  before.insertAdjacentElement('afterend',tabbar);
  tabbar.insertAdjacentElement('afterend',area);
+ setupAdminViews();
  accountTabsReady=true;
  showAccountTab('inicio');
 }
@@ -1073,6 +1074,40 @@ async function buyCreditPackage(packageId){
  const note=document.getElementById('credit-packages');
  const message=document.createElement('p');message.className='small muted';message.textContent='No se pudo iniciar la compra: '+authErr(err);note.appendChild(message);
  }finally{realBusy=false;buttons.forEach(b=>b.disabled=false)}
+}
+
+
+let adminViewsReady=false;
+function setupAdminViews(){
+ if(adminViewsReady)return;
+ const admin=document.getElementById('admin-command');
+ const grid=admin?.querySelector('.admin-command-grid');
+ const panes=admin?.querySelectorAll(':scope > .admin-command-pane');
+ if(!admin||!grid||!panes||panes.length<2)return;
+ const adm=document.getElementById('member-admin');
+ const promoted=document.getElementById('promotion-admin-workspace');
+ const tabs=document.createElement('nav');tabs.className='admin-inner-tabs';tabs.setAttribute('aria-label','Secciones de administración');
+ const body=document.createElement('div');body.className='admin-inner-panels';
+ for(const [id,label] of [['overview','Resumen'],['members','Miembros'],['orders','Pedidos'],['applications','Admisiones y ascensos']]){
+  const btn=document.createElement('button');btn.type='button';btn.textContent=label;btn.dataset.adminView=id;
+  btn.addEventListener('click',()=>showAdminView(id));tabs.appendChild(btn);
+  const pane=document.createElement('div');pane.id='admin-view-'+id;pane.className='admin-view';
+  body.appendChild(pane);
+ }
+ const reference=admin.querySelector('#admin-attention');
+ reference.insertAdjacentElement('afterend',tabs);
+ tabs.insertAdjacentElement('afterend',body);
+ document.getElementById('admin-view-overview').appendChild(grid);
+ document.getElementById('admin-view-members').appendChild(panes[0]);
+ document.getElementById('admin-view-orders').appendChild(panes[1]);
+ if(adm)document.getElementById('admin-view-applications').appendChild(adm);
+ if(promoted)document.getElementById('admin-view-applications').appendChild(promoted);
+ adminViewsReady=true;showAdminView('overview');
+}
+function showAdminView(name){
+ if(!adminViewsReady)return;
+ document.querySelectorAll('.admin-inner-tabs button').forEach(b=>b.classList.toggle('is-active',b.dataset.adminView===name));
+ document.querySelectorAll('.admin-view').forEach(p=>{p.hidden=p.id!=='admin-view-'+name});
 }
 
 async function signOutAccount(){

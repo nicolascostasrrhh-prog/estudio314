@@ -121,7 +121,7 @@ begin
  insert into public.promotion_audit(application_id,actor_id,event_type)
  values(v_id,auth.uid(),'solicitud');
  return v_id;
-end; $;
+end; $$;
 
 create function public.endorse_promotion(p_application uuid,p_reason text) returns void
 language plpgsql security definer set search_path = ''
@@ -137,7 +137,7 @@ begin
  values(p_application,auth.uid(),trim(p_reason));
  insert into public.promotion_audit(application_id,actor_id,event_type)
  values(p_application,auth.uid(),'aval');
-end; $;
+end; $$;
 
 create function public.decide_promotion(p_application uuid,p_approve boolean,p_reason text) returns void
 language plpgsql security definer set search_path = ''
@@ -162,7 +162,7 @@ begin
  insert into public.promotion_audit(application_id,actor_id,event_type,details)
  values(p_application,auth.uid(),case when p_approve then 'aprobacion' else 'rechazo' end,
  jsonb_build_object('razon',p_reason));
-end; $;
+end; $$;
 
 alter table public.member_profiles enable row level security;
 alter table public.platform_admins enable row level security;

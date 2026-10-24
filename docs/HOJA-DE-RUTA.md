@@ -43,3 +43,13 @@ Se implementan directamente las mejoras técnicas no destructivas que no necesit
 - **Siguientes desarrollos no bloqueados:** formularios detallados para briefs de servicios y flujo de materiales; métricas de entregas; mejoras de búsqueda y accesibilidad; pruebas de RLS con perfiles sintéticos controlados. Los datos confidenciales de expedientes no deben incorporarse a material de ensayo.
 
 **No pendientes para pedir autorización individual:** escritura de código, migraciones no destructivas, pruebas, mejoras de interfaz y documentación. Se consulta al titular solo por datos de identidad, políticas comerciales, decisiones jurídicas o contrataciones con costo.
+
+## Entrega adicional — colaboración y materiales por pedido
+- **Base real:** migraciones `20261023_012_order_collaboration.sql` y `20261023_013_order_file_registry.sql`; 13 migraciones y 13 tablas públicas con RLS.
+- **Brief:** formulario de objetivo e indicaciones en `Mi cuenta`, enviado al procedimiento `request_service`; no hay cargos sin servicios activos, miembros autorizados y créditos.
+- **Conversaciones:** `service_order_messages`, lectura por titular y administradores, escritura mediante RPC con validación de rol y clase de mensaje. No se admiten mensajes a pedidos cancelados.
+- **Materiales:** bucket `estudio314-order-files` *privado*, 20 MB por archivo, PDF/PNG/JPG/MP4. Ruta por ID de pedido y usuario; acceso restringido por Storage RLS; índice de archivos `service_order_files` visible solo a propietario y administración. Apertura por enlace temporal de 60 segundos.
+- **Interfaz:** desde pedidos en área privada y centro administrativo se puede abrir el espacio, registrar mensajes, adjuntar materiales y consultar archivos.
+- **Pruebas:** validación de sintaxis JS, confirmación de bucket no público y límites. `anon` no tiene EXECUTE sobre funciones de mensajes y archivos y se verificó denegación de SELECT anónimo para tabla de mensajes.
+- **Advertencia:** falta prueba funcional con dos cuentas reales (abogado y operador), incluyendo permisos de Storage, carga/descarga, verificación de MIME, manejo de errores y políticas de retención. **No subir expedientes jurídicos reales ni información sensible hasta completar esta revisión y la documentación legal.**
+- **Seguridad pendiente:** el analizador Supabase mantiene avisos generales por RPCs `SECURITY DEFINER` ejecutables por usuarios autenticados. Deben revisarse con pruebas de roles antes de apertura comercial.

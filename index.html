@@ -527,8 +527,7 @@ async function loadPromotionWorkspaces(){
   const available=applications.filter(a=>a.applicant_id!==liveUser.id);
   document.getElementById('originario-cases').innerHTML=available.length?available.map(a=>{
     const own=endorsements.some(e=>e.application_id===a.id&&e.originario_id===liveUser.id);
-    const count=new Set(endorsements.filter(e=>e.application_id===a.id).map(e=>e.originario_id)).size;
-    return '<article class="membership-review"><strong>Postulación '+escapeHTML(a.id.slice(0,8))+' · '+escapeHTML(liveCategory(a.requested_category))+'</strong><p>Presentada '+escapeHTML(new Date(a.submitted_at).toLocaleDateString('es-AR'))+' · Avales registrados: '+count+'/2</p>'+(own?'<p><b>Tu aval ya fue registrado.</b> No se permite avalar dos veces.</p>':'<label for="origin-note-'+escapeHTML(a.id)+'">Fundamento del aval</label><textarea id="origin-note-'+escapeHTML(a.id)+'" maxlength="1500" placeholder="Evaluación de trayectoria y razones del aval (mínimo 10 caracteres)"></textarea><button class="outline" onclick="submitOriginarioEndorsement(\''+escapeHTML(a.id)+'\')">Firmar aval ↗</button>')+'</article>';
+    return '<article class="membership-review"><strong>Postulación '+escapeHTML(a.id.slice(0,8))+' · '+escapeHTML(liveCategory(a.requested_category))+'</strong><p>Presentada '+escapeHTML(new Date(a.submitted_at).toLocaleDateString('es-AR'))+' · Los avales de otros Originarios se mantienen privados.</p>'+(own?'<p><b>Tu aval ya fue registrado.</b> No se permite avalar dos veces.</p>':'<label for="origin-note-'+escapeHTML(a.id)+'">Fundamento del aval</label><textarea id="origin-note-'+escapeHTML(a.id)+'" maxlength="1500" placeholder="Evaluación de trayectoria y razones del aval (mínimo 10 caracteres)"></textarea><button class="outline" onclick="submitOriginarioEndorsement(\''+escapeHTML(a.id)+'\')">Firmar aval ↗</button>')+'</article>';
   }).join(''):'<p class="small muted">No hay solicitudes disponibles para avalar.</p>';
  }
  if(isAdmin){

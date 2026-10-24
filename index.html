@@ -219,6 +219,27 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 @media(max-width:1100px){.premium-shell{grid-template-columns:205px minmax(0,1fr)}.premium-side{padding:22px 10px}.premium-content{padding:0 15px 24px}.premium-shell .account-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}.premium-hero-sign{display:none}}
 @media(max-width:730px){.premium-shell{display:block}.premium-side{display:none;position:absolute;z-index:50;top:auto;left:0;width:min(280px,90vw);box-shadow:0 15px 35px #0005;min-height:80vh}.premium-side.mobile-open{display:flex}.premium-content{padding:0 12px 25px}.premium-topbar{min-height:61px}.premium-search{min-width:0;flex:1;max-width:220px;font-size:10px}.premium-hero{padding:24px 20px;min-height:130px}.premium-hero h2{font-size:27px}.premium-mobile-menu{display:block;margin:10px 0;padding:8px 13px;border:1px solid #d8dfe4;border-radius:7px;background:white;color:#38444c}.premium-shell #account-overview .account-kpis{grid-template-columns:1fr}.premium-shell .account-shortcuts{grid-template-columns:1fr 1fr}.premium-who .premium-identity{display:none}}
 @media(max-width:450px){.premium-shell .account-shortcuts{grid-template-columns:1fr}.premium-search{font-size:0}.premium-search::before{content:'Buscar funciones';font-size:11px}}
+
+.premium-analytics{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(260px,1fr);gap:16px;margin:20px 0}
+.premium-data-card{background:#fff;border:1px solid #e6e8eb;border-radius:12px;padding:22px;min-width:0;box-shadow:0 4px 15px rgba(36,45,52,.025)}
+.premium-card-title{display:flex;justify-content:space-between;align-items:flex-start;gap:15px}
+.premium-card-title span{font-size:10px;font-weight:800;color:#bd7658;letter-spacing:.09em}
+.premium-card-title h4{font:750 17px Inter,Manrope,Arial,sans-serif;color:#29323b;margin:7px 0 0}
+.premium-card-title small{color:#87939d;font-size:10px;white-space:nowrap}
+.premium-chart{margin-top:16px;min-height:210px}
+.premium-chart svg{width:100%;height:auto;max-height:255px}
+.premium-legend{display:flex;gap:18px;color:#67727c;font-size:11px}
+.premium-legend span{display:flex;gap:6px;align-items:center}
+.premium-legend i{width:9px;height:9px;display:inline-block;border-radius:3px}
+.premium-legend .legend-one{background:#37424d}
+.premium-legend .legend-two{background:#be7556}
+.premium-chart>p{margin:4px 0 0}
+.premium-activity{padding-top:14px}
+.premium-activity>div{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 0;border-bottom:1px solid #e7eaed}
+.premium-activity>div span{color:#687681;font-size:12px}
+.premium-activity>div strong{color:#283640;font-size:25px;font-weight:800}
+.premium-activity>p{margin-top:15px}
+@media(max-width:1200px){.premium-analytics{grid-template-columns:1fr}}
 </style></head><body>
 <header><div class="brand">ESTUDIO <span>3.14</span></div><nav aria-label="Secciones"><button onclick="go('inicio')">Inicio</button><button onclick="go('buscar')">Buscar abogado</button><button onclick="go('membresias')">Membresías</button><button onclick="go('panel')">Panel de miembro</button><button onclick="go('avales')">Avales</button><button class="nav-account" onclick="go('cuenta')">Mi cuenta ↗</button></nav></header>
 <main>

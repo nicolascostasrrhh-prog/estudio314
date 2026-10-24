@@ -383,6 +383,31 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 .studio-order-actions{display:flex;flex-wrap:wrap;gap:10px}
 .studio-order-actions button{font-size:11px}
 @media(max-width:600px){.studio-order-card{padding:14px}.studio-order-title{flex-wrap:wrap}.studio-order-progress{gap:2px}.studio-order-progress small{font-size:9px}.studio-order-actions button{width:100%}}
+
+/* Administración: fichas editoriales de servicios */
+#service-draft-admin{background:#f7f9fa;color:#273d49}
+.service-draft-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0 23px}
+.service-draft-summary>div{background:#e7edf0;border:1px solid #d4dee2;border-radius:9px;padding:17px;display:grid;gap:4px}
+.service-draft-summary b{font:800 25px Inter,Manrope,Arial,sans-serif;color:#364955}
+.service-draft-summary span{font-size:10px;color:#687c87;font-weight:700}
+.service-draft-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.service-draft-card{background:white;border:1px solid #dce5e8;border-radius:12px;padding:18px;box-shadow:0 5px 17px #233e4909;min-width:0}
+.service-draft-head{display:flex;align-items:start;justify-content:space-between;gap:12px}
+.service-draft-head small{font-size:10px;color:#bd7c5f;font-weight:800;letter-spacing:.08em}
+.service-draft-head h5{font:normal 23px Georgia,serif;line-height:1.16;color:#2e414a;margin:10px 0}
+.service-draft-head p{font-size:12px;color:#5c727e;line-height:1.65}
+.service-draft-card details{border-top:1px solid #e5ecef;padding-top:13px;margin-top:14px}
+.service-draft-card summary{font-size:12px;font-weight:800;color:#385767;cursor:pointer}
+.service-draft-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:17px}
+.service-draft-form label{font-size:11px;font-weight:800;color:#566e7c;display:grid;gap:7px}
+.service-draft-form label.wide{grid-column:1/-1}
+.service-draft-form input:not([type=checkbox]),.service-draft-form textarea{width:100%;background:#f6f9fa;border:1px solid #cad9df;border-radius:7px;color:#263c48;padding:11px;font:12px Inter,Arial,sans-serif}
+.service-draft-form textarea{min-height:82px;resize:vertical}
+.service-draft-form .service-draft-check{display:flex;align-items:center;gap:10px}
+.service-draft-form .service-draft-check input{width:auto}
+.service-draft-form button{grid-column:1/-1}
+@media(max-width:1100px){.service-draft-list{grid-template-columns:1fr}}
+@media(max-width:540px){.service-draft-form,.service-draft-summary{grid-template-columns:1fr}.service-draft-form label.wide{grid-column:auto}.service-draft-form button{grid-column:auto}.service-draft-head{display:block}.service-draft-head .student-status-chip{margin-top:8px}}
 </style></head><body>
 <header><div class="brand">ESTUDIO <span>3.14</span></div><nav aria-label="Secciones"><button onclick="go('inicio')">Inicio</button><button onclick="go('buscar')">Buscar abogado</button><button onclick="go('membresias')">Membresías</button><button onclick="go('panel')">Panel de miembro</button><button onclick="go('formacion')">Estudiantes</button><button class="nav-account" onclick="go('cuenta')">Mi cuenta ↗</button></nav></header>
 <main>

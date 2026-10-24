@@ -558,3 +558,25 @@ body{background:#e7e8e9}.plan-shell{max-width:1240px;margin:auto;padding:0 28px 
 .plan-shell .plan-anchorbar{position:sticky;top:0;z-index:9;box-shadow:0 7px 15px #182a3412}
 .plan-shell .plan-section-intro,.plan-shell .plan-process-section,.plan-shell .plan-conditions,.plan-shell .plan-faq{scroll-margin-top:90px}
 @media(max-width:600px){.plan-shell .plan-anchorbar{position:relative;gap:10px}.plan-shell .plan-final-cta a{width:100%;margin:6px 0}}
+
+/* Detalle editorial de capacidades recuperadas del catálogo histórico */
+.plan-capabilities{margin:66px 0 50px}
+.capability-summary{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:24px 0}
+.capability-summary>div{background:#fff;border:1px solid #d9e0e3;border-radius:12px;padding:23px}
+.capability-summary b{font:normal 23px Georgia,serif;color:#283c47}
+.capability-summary p{color:#62717d;font-size:13px;margin:10px 0 0}
+.capability-details{background:#f9fafb;border:1px solid #cbd6db;border-radius:14px;overflow:hidden}
+.capability-details>summary{list-style:none;cursor:pointer;background:#2b353d;color:white;padding:22px 27px;font-size:14px;font-weight:800;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.capability-details>summary::-webkit-details-marker{display:none}
+.capability-details>summary span{font-size:25px;color:#d8ae99}
+.capability-details[open]>summary span{transform:rotate(45deg)}
+.capability-context{padding:22px 27px 0;color:#344853}
+.capability-context p{font-size:13px;color:#5b6e79;margin:7px 0}
+.capability-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:24px}
+.capability-grid article{padding:24px;border:1px solid #dde5e8;background:white;border-radius:10px;box-shadow:0 6px 15px #142a3708}
+.capability-grid .detail-category{font-size:10px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:#a46b50}
+.capability-grid h4{font:normal 23px/1.2 Georgia,serif;margin:12px 0;color:#273e49}
+.capability-grid p{font-size:13px;color:#526773;line-height:1.7;margin:0 0 13px}
+.capability-grid small{font-size:11px;color:#7b6e65;line-height:1.6}
+.capability-disclaimer{font-size:12px;color:#65757f;margin:0;padding:0 26px 27px}
+@media(max-width:680px){.capability-summary,.capability-grid{grid-template-columns:1fr}.capability-grid{padding:13px}.capability-details>summary{padding:18px}.capability-context{padding:18px 18px 0}}

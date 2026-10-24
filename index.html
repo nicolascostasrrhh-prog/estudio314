@@ -979,6 +979,47 @@ const ACCOUNT_TABS=[
  ['administracion','Administración',['admin-command','member-admin','promotion-admin-workspace']]
 ];
 let accountTabsReady=false;
+
+function setupPremiumShell(){
+ const profile=document.getElementById('account-profile');
+ if(!profile||profile.querySelector('.premium-shell'))return;
+ const nav=profile.querySelector('.account-tabs');
+ const panes=profile.querySelector('#account-tab-panels');
+ const shell=document.createElement('div');shell.className='premium-shell';
+ const side=document.createElement('aside');side.className='premium-side';
+ side.innerHTML='<div class="premium-brand"><span>3.14</span><small>ESTUDIO · PLATAFORMA</small></div><div class="premium-side-label">ESPACIO DE TRABAJO</div>';
+ side.appendChild(nav);
+ const foot=document.createElement('div');foot.className='premium-side-foot';
+ foot.innerHTML='<div class="premium-monogram">⚖</div><strong>Abogacía conectada.</strong><p>Herramientas para ejercer y crecer con independencia.</p>';
+ side.appendChild(foot);
+ const content=document.createElement('div');content.className='premium-content';
+ const top=document.createElement('div');top.className='premium-topbar';
+ const search=document.createElement('button');search.type='button';search.className='premium-search';
+ search.textContent='⌕  Buscar funciones, servicios y herramientas';
+ search.addEventListener('click',()=>{const query=prompt('¿Qué necesitás encontrar? (créditos, pedidos, CRM, membresía, perfil, administración)');if(query){const term=query.toLocaleLowerCase('es-AR');const match=term.includes('crédit')?'creditos':term.includes('pedido')||term.includes('servicio')?'trabajo':term.includes('crm')||term.includes('contact')?'contactos':term.includes('membres')?'membresia':term.includes('perfil')?'perfil':term.includes('admin')?'administracion':'inicio';showAccountTab(match)}});
+ const who=document.createElement('div');who.className='premium-who';
+ const avatar=document.createElement('span');avatar.className='premium-avatar';avatar.textContent='3.14';
+ const ident=document.createElement('div');ident.className='premium-identity';
+ const displayName=profile.querySelector('#account-name');const email=profile.querySelector('#account-email');
+ ident.append(displayName,email);who.append(avatar,ident);
+ top.append(search,who);
+ const hero=document.createElement('div');hero.className='premium-hero';
+ hero.innerHTML='<div><span class="premium-eyebrow">ESTUDIO 3.14 / ÁREA DE TRABAJO</span><h2 id="premium-section-title">Centro de operaciones</h2><p id="premium-section-subtitle">Tu actividad profesional en una sola plataforma.</p></div><div class="premium-hero-sign">3.14 <span>ABOGACÍA · TECNOLOGÍA · COMUNIDAD</span></div>';
+ const mobile=document.createElement('button');mobile.type='button';mobile.className='premium-mobile-menu';mobile.textContent='☰ Menú';
+ mobile.addEventListener('click',()=>side.classList.toggle('mobile-open'));
+ content.append(top,mobile,hero,panes);
+ shell.append(side,content);
+ profile.insertBefore(shell,profile.firstChild);
+ profile.classList.add('premium-account');
+ nav.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>side.classList.remove('mobile-open')));
+}
+function setPremiumSection(id){
+ const names={inicio:['Centro de operaciones','Indicadores y herramientas de tu espacio profesional.'],membresia:['Membresía','Tu admisión, categoría y comunidad profesional.'],trabajo:['Servicios y pedidos','Gestioná trabajos y entregas desde un solo lugar.'],creditos:['Billetera de créditos','Comprá créditos y consultá tus movimientos.'],contactos:['Relaciones profesionales','Gestioná oportunidades y próximos contactos.'],perfil:['Presencia profesional','Configurá tu perfil público del marketplace.'],administracion:['Centro de administración','Miembros, operaciones y solicitudes en tiempo real.']};
+ const pair=names[id]||names.inicio;
+ const title=document.getElementById('premium-section-title'),sub=document.getElementById('premium-section-subtitle');
+ if(title)title.textContent=pair[0];if(sub)sub.textContent=pair[1];
+}
+
 function createAccountTabs(){
  if(accountTabsReady)return;
  const parent=document.getElementById('account-profile');if(!parent)return;
@@ -1027,6 +1068,7 @@ function createAccountTabs(){
  before.insertAdjacentElement('afterend',tabbar);
  tabbar.insertAdjacentElement('afterend',area);
  setupAdminViews();
+ setupPremiumShell();
  accountTabsReady=true;
  showAccountTab('inicio');
 }
@@ -1046,6 +1088,7 @@ function showAccountTab(id){
   button.hidden=(!professional&&label==='Mi CRM');
  });
  document.querySelectorAll('.account-tab-panel').forEach(el=>{el.hidden=el.id!=='account-tab-'+id});
+ setPremiumSection(id);
 }
 
 

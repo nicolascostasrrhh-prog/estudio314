@@ -1033,13 +1033,18 @@ function createAccountTabs(){
 function showAccountTab(id){
  if(!accountTabsReady)return;
  const isAdmin=!document.getElementById('admin-command').hidden;
+ const professional=Boolean(liveProfile?.is_verified&&['asociado','titular','distinguido','originario'].includes(liveProfile.category));
+ if((id==='administracion'&&!isAdmin)||(['contactos','perfil'].includes(id)&&!professional))id='inicio';
  document.querySelectorAll('.account-tab').forEach(button=>{
-  const hide=button.dataset.accountTab==='administracion'&&!isAdmin;
-  button.hidden=hide;
-  const active=button.dataset.accountTab===id;
+  const tab=button.dataset.accountTab;
+  button.hidden=(tab==='administracion'&&!isAdmin)||(['contactos','perfil'].includes(tab)&&!professional);
+  const active=tab===id;
   button.classList.toggle('is-active',active);button.setAttribute('aria-current',active?'page':'false');
  });
- if(id==='administracion'&&!isAdmin)id='inicio';
+ document.querySelectorAll('.account-shortcut').forEach(button=>{
+  const label=button.querySelector('strong')?.textContent||'';
+  button.hidden=(!professional&&label==='Mi CRM');
+ });
  document.querySelectorAll('.account-tab-panel').forEach(el=>{el.hidden=el.id!=='account-tab-'+id});
 }
 
@@ -1058,7 +1063,7 @@ function updateAccountHome(){
  }else{
   banner.innerHTML='<div><span class="account-action-eyebrow">TU ESTUDIO EN MARCHA</span><h4>Organizá tus próximos trabajos</h4><p>Revisá pedidos, consultá tu saldo y gestioná tus servicios desde el panel.</p></div><button type="button" class="primary" onclick="showAccountTab(\'trabajo\')">Ver mis servicios ↗</button>';
  }
- const crm=document.querySelector('.account-shortcut');if(crm)crm.closest('.account-shortcuts').hidden=false;
+
 }
 
 async function refreshCreditShop(){

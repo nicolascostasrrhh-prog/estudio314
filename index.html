@@ -408,8 +408,42 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 .service-draft-form button{grid-column:1/-1}
 @media(max-width:1100px){.service-draft-list{grid-template-columns:1fr}}
 @media(max-width:540px){.service-draft-form,.service-draft-summary{grid-template-columns:1fr}.service-draft-form label.wide{grid-column:auto}.service-draft-form button{grid-column:auto}.service-draft-head{display:block}.service-draft-head .student-status-chip{margin-top:8px}}
+
+/* Producto inicial simplificado: un plan, pocas acciones, sin tienda pública */
+.growth-workspace{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:19px;align-items:start}
+.growth-overview,.growth-help{background:#fff;border:1px solid #e0e5e8;border-radius:12px;padding:27px;box-shadow:0 6px 19px #23323b0b;min-width:0}
+.growth-overview h3{font:normal 35px Georgia,serif;color:#2c3e48;margin:13px 0}
+.growth-overview>p,.growth-help>p{font-size:13px;color:#627782;line-height:1.7}
+.growth-help h4{font:normal 28px Georgia,serif;color:#2e414a;margin:0 0 10px}
+.growth-plan-status{background:#f1f5f5;border-radius:9px;margin:24px 0;padding:22px;color:#425966}
+.growth-plan-status strong,.growth-plan-status h4{font-size:18px;color:#2e434d;margin:12px 0}
+.growth-plan-status p{font-size:13px;line-height:1.6}
+.growth-status-chip{display:inline-block;background:#eadbd3;color:#83513b;font-size:10px;font-weight:800;padding:7px 11px;border-radius:16px}
+.growth-actions{display:grid;gap:9px}
+.growth-step{display:flex;align-items:flex-start;gap:12px;padding:16px 10px;border-bottom:1px solid #e2e8eb}
+.growth-step-icon{background:#324c57;color:#fff;display:grid;place-items:center;flex:0 0 27px;height:27px;border-radius:50%}
+.growth-step>div{flex:1}
+.growth-step strong{font-size:13px;color:#374a55}
+.growth-step p{font-size:12px;color:#72818a;margin:6px 0}
+.growth-step small{color:#a16e56;font-size:10px}
+#growth-request-form{display:grid;gap:10px;margin-top:20px}
+#growth-request-form label,.growth-admin-form label{font-size:11px;font-weight:800;color:#536976}
+#growth-request-form select,#growth-request-form textarea,.growth-admin-form select,.growth-admin-form input,.growth-admin-form textarea{background:#f8fafb;border:1px solid #c9d7de;border-radius:8px;padding:12px;width:100%;color:#2e4551}
+#growth-request-form textarea{min-height:125px}
+.growth-request-row{border-top:1px solid #e5eced;padding:14px 0;display:flex;gap:10px;justify-content:space-between;font-size:12px;line-height:1.5}
+.growth-request-row span{flex:1}
+.growth-request-row b{font-size:10px;color:#967059;white-space:nowrap}
+.growth-admin-card{background:#fff;border:1px solid #dce4e8;border-radius:10px;padding:18px;margin:12px 0;color:#344954}
+.growth-admin-card p{color:#5d737e;font-size:12px;line-height:1.6}
+.growth-admin-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:end;margin:15px 0}
+.growth-admin-form label{display:grid;gap:6px}
+.growth-admin-form button{max-width:260px}
+#growth-admin h5{font:normal 23px Georgia,serif;margin:23px 0 10px}
+#growth-admin-feedback{font-size:12px;color:#466879}
+@media(max-width:1000px){.growth-workspace{grid-template-columns:1fr}}
+@media(max-width:600px){.growth-admin-form{grid-template-columns:1fr}.growth-overview,.growth-help{padding:18px}}
 </style></head><body>
-<header><div class="brand">ESTUDIO <span>3.14</span></div><nav aria-label="Secciones"><button onclick="go('inicio')">Inicio</button><button onclick="go('buscar')">Buscar abogado</button><button onclick="go('membresias')">Membresías</button><button onclick="go('panel')">Panel de miembro</button><button onclick="go('formacion')">Estudiantes</button><button class="nav-account" onclick="go('cuenta')">Mi cuenta ↗</button></nav></header>
+<header><div class="brand">ESTUDIO <span>3.14</span></div><nav aria-label="Secciones"><button onclick="go('inicio')">Inicio</button><button onclick="go('buscar')">Buscar abogado</button><button onclick="go('membresias')">Membresías</button><button onclick="go('formacion')">Estudiantes</button><button class="nav-account" onclick="go('cuenta')">Mi cuenta ↗</button></nav></header>
 <main>
 <section id="inicio" class="active">
 <div class="hero home-hero">
@@ -433,7 +467,7 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
   <article class="offer"><span class="offer-num">02</span><div class="offer-icon"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="14" cy="15" r="5"/><circle cx="27" cy="16" r="4"/><path d="M5 31c0-8 18-8 18 0m-1 0c0-6 13-6 13 0"/></svg></div><h3>Comunidad y membresías</h3><p>Pertenencia profesional, formación, herramientas y beneficios.</p></article>
   <article class="offer"><span class="offer-num">03</span><div class="offer-icon"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="10" width="30" height="22"/><path d="M5 17h30m-24 8h7m4 0h7"/></svg></div><h3>Servicios con créditos</h3><p>Redes sociales, Meta Ads, automatizaciones y consultoría, a demanda.</p></article>
 </div>
-<div class="how-banner"><div class="how-image" role="img" aria-label="Interior de oficina contemporánea en tonos neutros"></div><div class="how-copy"><div class="eyebrow">SIMPLE POR FUERA · COMPLETO POR DENTRO</div><h2>Todo para desarrollar y gestionar tu estudio, en un solo lugar.</h2><p>Gestioná tus consultas, fortalecé tu presencia profesional y elegí cómo utilizar tus créditos en publicidad, contenidos, tecnología y soluciones empresariales.</p><button class="light-link" onclick="go('panel')">Conocer el panel de servicios →</button></div></div>
+<div class="how-banner"><div class="how-image" role="img" aria-label="Interior de oficina contemporánea en tonos neutros"></div><div class="how-copy"><div class="eyebrow">SIMPLE POR FUERA · COMPLETO POR DENTRO</div><h2>Todo para desarrollar y gestionar tu estudio, en un solo lugar.</h2><p>Gestioná tus consultas, fortalecé tu presencia profesional y elegí cómo utilizar tus créditos en publicidad, contenidos, tecnología y soluciones empresariales.</p><button class="light-link" onclick="go('cuenta')">Conocer el panel de servicios →</button></div></div>
 <div class="steps-section">
  <div><div class="eyebrow">Para quienes buscan un profesional</div><h2>Encontrar asesoramiento, sin vueltas.</h2><div class="steps"><div><span>01</span><p>Elegí el área jurídica y la jurisdicción.</p></div><div><span>02</span><p>Explorá perfiles de profesionales.</p></div><div><span>03</span><p>Contactá al abogado que elijas.</p></div></div><button class="outline" onclick="go('buscar')">Buscar abogado ↗</button></div>
  <div><div class="eyebrow">Para abogados y estudios</div><h2>Tu desarrollo, a tu manera.</h2><div class="steps"><div><span>01</span><p>Formá parte de la comunidad.</p></div><div><span>02</span><p>Gestioná tu perfil y tus consultas.</p></div><div><span>03</span><p>Usá créditos para contratar servicios.</p></div></div><button class="outline" onclick="go('membresias')">Ver membresías ↗</button></div>
@@ -1495,7 +1529,7 @@ function setupPremiumShell(){
  const top=document.createElement('div');top.className='premium-topbar';
  const search=document.createElement('button');search.type='button';search.className='premium-search';
  search.textContent='⌕  Buscar funciones, servicios y herramientas';
- search.addEventListener('click',()=>{const query=prompt('¿Qué necesitás encontrar? (créditos, pedidos, CRM, membresía, perfil, administración)');if(query){const term=query.toLocaleLowerCase('es-AR');const match=term.includes('crédit')?'creditos':term.includes('pedido')||term.includes('servicio')?'trabajo':term.includes('crm')||term.includes('contact')?'contactos':term.includes('membres')?'membresia':term.includes('perfil')?'perfil':term.includes('admin')?'administracion':'inicio';showAccountTab(match)}});
+ search.addEventListener('click',()=>{const query=prompt('¿Qué necesitás encontrar? (créditos, pedidos, CRM, membresía, perfil, administración)');if(query){const term=query.toLocaleLowerCase('es-AR');const match=term.includes('crédit')?'creditos':term.includes('pedido')||term.includes('servicio')||term.includes('crecimiento')?'crecimiento':term.includes('crm')||term.includes('contact')?'contactos':term.includes('membres')?'membresia':term.includes('perfil')?'perfil':term.includes('admin')?'administracion':'inicio';showAccountTab(match)}});
  const who=document.createElement('div');who.className='premium-who';
  const avatar=document.createElement('span');avatar.className='premium-avatar';avatar.textContent='3.14';
  const ident=document.createElement('div');ident.className='premium-identity';

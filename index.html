@@ -750,7 +750,28 @@ function jumpPlanSection(event,id){
  if(event)event.preventDefault();
  const section=document.getElementById(id);if(section)section.scrollIntoView({behavior:'smooth',block:'start'});
 }
-function go(id){document.querySelectorAll('main section').forEach(e=>e.classList.toggle('active',e.id===id));window.scrollTo({top:0,behavior:'smooth'});if(id==='buscar'){renderLawyers();loadPublicLawyers()};if(id==='panel')renderPanel();if(id==='formacion')loadMyStudentApplication()}
+function go(id){
+ document.querySelectorAll('main section').forEach(e=>e.classList.toggle('active',e.id===id));
+ if(['plan-acceso','plan-crecimiento','membresias'].includes(id)){
+  if(location.hash!=='#'+id)history.pushState({section:id},'',location.pathname+location.search+'#'+id);
+ }else if(['plan-acceso','plan-crecimiento','membresias'].includes(location.hash.slice(1))){
+  history.pushState({},'',location.pathname+location.search);
+ }
+ window.scrollTo({top:0,behavior:'smooth'});
+ if(id==='buscar'){renderLawyers();loadPublicLawyers()}
+ if(id==='panel')renderPanel();
+ if(id==='formacion')loadMyStudentApplication();
+}
+function handlePlanRoute(){
+ const id=location.hash.slice(1);
+ if(['plan-acceso','plan-crecimiento','membresias'].includes(id)){
+  document.querySelectorAll('main section').forEach(e=>e.classList.toggle('active',e.id===id));
+  window.scrollTo({top:0,behavior:'auto'});
+ }
+}
+window.addEventListener('popstate',handlePlanRoute);
+window.addEventListener('load',handlePlanRoute);
+
 function renderLawyers(){const a=document.getElementById('esp').value,j=document.getElementById('jur').value,results=MOCK.filter(x=>(!a||x.area===a)&&(!j||x.jur===j));document.getElementById('lawyers').innerHTML=results.length?results.map(x=>'<article class="lawyer-card"><div class="lawyer-avatar" aria-hidden="true">'+x.area.slice(0,1)+'</div><div><span class="tag">PERFIL FICTICIO</span><h3>'+x.name+'</h3><p>'+x.area+' · '+x.jur+'</p><div class="rank-chip">'+escapeHTML(x.rank)+'</div><button class="outline" onclick="showDemoProfile()">Ver perfil de ejemplo ↗</button></div></article>').join(''):'<p>No hay perfiles de demostración para estos filtros.</p>'}
 function showDemoProfile(){alert('Perfil demostrativo: todavía no se reciben consultas reales')}
 function studioServiceIcon(group){

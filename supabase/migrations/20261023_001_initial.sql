@@ -113,7 +113,7 @@ begin
  if p_category='distinguido' and p.category<>'titular' then raise exception 'La categoría de origen debe ser Titular'; end if;
  v_months := (extract(year from age(current_date,p.member_since))::integer*12)
              + extract(month from age(current_date,p.member_since))::integer;
- if v_months < case when p_category='titular' then 12 else 24 end then
+ if v_months < (case when p_category='titular' then 12 else 24 end) then
    raise exception 'Antigüedad insuficiente';
  end if;
  insert into public.promotion_applications(applicant_id,requested_category)

@@ -1,7 +1,6 @@
-// Configuración PUBLICABLE del proyecto Supabase.
-// Solo usar URL del proyecto y clave "publishable" (o "anon" heredada).
-// NUNCA colocar aquí service_role, secretos o contraseñas.
+// Configuración PÚBLICA de Estudio 3.14. La clave publicable no concede privilegios administrativos.
+// No colocar aquí claves secretas, service_role, contraseñas ni tokens privados.
 window.ESTUDIO314_SUPABASE_CONFIG = {
-  url: "",
-  publishableKey: ""
+  url: "https://pdefftaresvglcugzqtz.supabase.co",
+  publishableKey: "sb_publishable_pud4qvNwpRUbPDNk8sjt1g_4tQLYN24"
 };

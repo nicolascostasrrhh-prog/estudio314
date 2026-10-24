@@ -33,3 +33,13 @@ Se implementan directamente las mejoras técnicas no destructivas que no necesit
 3. Precios definitivos, montos de créditos, descuentos y medios de pago.
 4. Contratación de herramientas externas, dominio, canales de correo y sus costos.
 5. Autorización explícita de publicar materiales reales y abrir la plataforma al público.
+
+## Entrega ejecutada en esta intervención
+- **Gestión de pedidos:** `service_order_events`, función protegida `admin_advance_order`, transiciones válidas, historial, devolución completa de créditos al cancelar. UI administrativa y seguimiento para el miembro. Sin automatizar pagos.
+- **Marketplace verificable:** `lawyer_directory_profiles`, especialidad/localidad/provincia, autorización explícita de visibilidad, alta/actualización con perfil verificado y vista de búsqueda pública separada de ejemplos ficticios.
+- **Reglas de acceso:** políticas separadas para visitantes y miembros, comprobación satisfactoria de SELECT público sin sesión, sin permitir altas anónimas en directorio.
+- **Base de datos:** 11 migraciones en total, 11 tablas públicas con RLS habilitado; ninguna ficha profesional publicada, pedido real ni cuenta existente durante la revisión.
+- **Código:** cuatro bloques JavaScript superaron revisión de sintaxis. No se ha completado una prueba end-to-end con cuenta real (requiere identidad/administrador y material autorizado).
+- **Siguientes desarrollos no bloqueados:** formularios detallados para briefs de servicios y flujo de materiales; métricas de entregas; mejoras de búsqueda y accesibilidad; pruebas de RLS con perfiles sintéticos controlados. Los datos confidenciales de expedientes no deben incorporarse a material de ensayo.
+
+**No pendientes para pedir autorización individual:** escritura de código, migraciones no destructivas, pruebas, mejoras de interfaz y documentación. Se consulta al titular solo por datos de identidad, políticas comerciales, decisiones jurídicas o contrataciones con costo.

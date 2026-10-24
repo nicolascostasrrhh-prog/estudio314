@@ -442,7 +442,7 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 #growth-admin-feedback{font-size:12px;color:#466879}
 @media(max-width:1000px){.growth-workspace{grid-template-columns:1fr}}
 @media(max-width:600px){.growth-admin-form{grid-template-columns:1fr}.growth-overview,.growth-help{padding:18px}}
-.legacy-credit-kpi[hidden]{display:none!important}.premium-shell #account-overview .account-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.growth-workspace + #member-live-area{display:none!important}.premium-shell .account-shortcuts{grid-template-columns:repeat(3,minmax(0,1fr))}@media(max-width:730px){.premium-shell #account-overview .account-kpis,.premium-shell .account-shortcuts{grid-template-columns:1fr}}</style></head><body>
+.legacy-credit-kpi[hidden]{display:none!important}.premium-shell #account-overview .account-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.growth-workspace + #member-live-area{display:none!important}.premium-shell .account-shortcuts{grid-template-columns:repeat(3,minmax(0,1fr))}@media(max-width:730px){.premium-shell #account-overview .account-kpis,.premium-shell .account-shortcuts{grid-template-columns:1fr}}.premium-account> #credit-shop,.premium-account> #member-live-area,.premium-account> #service-brief,.premium-account> #order-workspace{display:none!important}</style></head><body>
 <header><div class="brand">ESTUDIO <span>3.14</span></div><nav aria-label="Secciones"><button onclick="go('inicio')">Inicio</button><button onclick="go('buscar')">Buscar abogado</button><button onclick="go('membresias')">Membresías</button><button onclick="go('formacion')">Estudiantes</button><button class="nav-account" onclick="go('cuenta')">Mi cuenta ↗</button></nav></header>
 <main>
 <section id="inicio" class="active">
@@ -1713,14 +1713,15 @@ async function loadGrowthAdmin(){
  const panel=document.getElementById('growth-admin');if(!panel||!authClient||!liveUser)return;
  const {data:allowed,error:permissionError}=await authClient.rpc('is_platform_admin',{p_user:liveUser.id});
  panel.hidden=!!permissionError||allowed!==true;if(panel.hidden)return;
- const [req,plans,members,actions]=await Promise.all([
+ const [req,plans,members,actions,notes]=await Promise.all([
   authClient.from('growth_requests').select('id,member_id,topic,message,status,created_at').order('created_at',{ascending:false}).limit(100),
-  authClient.from('growth_plans').select('id,member_id,objective,diagnosis,status,operator_note').limit(150),
+  authClient.from('growth_plans').select('id,member_id,objective,diagnosis,status').limit(150),
   authClient.from('member_profiles').select('user_id,display_name,is_verified').eq('active',true).limit(150),
-  authClient.from('growth_actions').select('id,plan_id,title,detail,status,sort_order').limit(300)
+  authClient.from('growth_actions').select('id,plan_id,title,detail,status,sort_order').limit(300),
+  authClient.from('growth_operator_notes').select('plan_id,note').limit(150)
  ]);
- if(req.error||plans.error||members.error||actions.error){document.getElementById('growth-admin-requests').textContent='No se pudieron cargar los planes y solicitudes.';return}
- growthAdminRequests=req.data||[];growthAdminPlans=plans.data||[];growthAdminMembers=members.data||[];growthAdminActions=actions.data||[];
+ if(req.error||plans.error||members.error||actions.error||notes.error){document.getElementById('growth-admin-requests').textContent='No se pudieron cargar los planes y solicitudes.';return}
+ growthAdminRequests=req.data||[];growthAdminPlans=(plans.data||[]).map(p=>({...p,operator_note:(notes.data||[]).find(n=>n.plan_id===p.id)?.note||''}));growthAdminMembers=members.data||[];growthAdminActions=actions.data||[];
  const name=id=>growthAdminMembers.find(m=>m.user_id===id)?.display_name||'Profesional';
  document.getElementById('growth-admin-requests').innerHTML='<h5>Solicitudes recibidas</h5>'+(growthAdminRequests.length?growthAdminRequests.map(r=>'<div class="growth-admin-card"><strong>'+escapeHTML(name(r.member_id))+'</strong><span class="growth-status-chip">'+escapeHTML(GROWTH_STATUS[r.status]||r.status)+'</span><p>'+escapeHTML(r.message)+'</p>'+(r.status==='cerrada'?'':'<div class="growth-admin-form"><select id="gr-status-'+r.id+'"><option value="en_revision">En revisión</option><option value="incorporada">Incorporada al plan</option><option value="cerrada">Cerrada</option></select><input id="gr-note-'+r.id+'" placeholder="Fundamento breve (mín. 10 caracteres)"><button class="outline" type="button" onclick="reviewGrowthRequest(\''+r.id+'\')">Guardar estado</button></div>')+'</div>').join(''):'<p class="small muted">No hay solicitudes nuevas.</p>');
  const memberOptions=growthAdminMembers.filter(m=>m.is_verified).map(m=>'<option value="'+escapeHTML(m.user_id)+'">'+escapeHTML(m.display_name)+'</option>').join('');

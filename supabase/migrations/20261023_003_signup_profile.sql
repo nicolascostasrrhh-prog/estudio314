@@ -13,7 +13,7 @@ begin
   values(new.id,v_name,'asociado',current_date,'plataforma',false,true)
   on conflict (user_id) do nothing;
   return new;
-end; $;
+end; $$;
 
 drop trigger if exists estudio314_member_signup on auth.users;
 create trigger estudio314_member_signup

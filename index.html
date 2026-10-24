@@ -732,6 +732,37 @@ async function sendWorkMessage(event){
  workStatus('Mensaje enviado.');await refreshWorkMessages();
 }
 
+
+async function refreshWorkFiles(){
+ const id=workOrderId;if(!id)return;
+ const {data,error}=await authClient.from('service_order_files').select('id,display_name,created_at').eq('order_id',id).order('created_at',{ascending:false}).limit(50);
+ if(id!==workOrderId)return;
+ const el=document.getElementById('work-files');
+ if(error){el.textContent='Error al consultar archivos: '+error.message;return}
+ el.innerHTML=data.length?data.map(f=>'<div class="live-row"><span>'+escapeHTML(f.display_name)+'</span><button class="outline" type="button" onclick="openWorkFile(\''+escapeHTML(f.id)+'\')">Abrir ↗</button></div>').join(''):'<p class="small muted">No hay archivos adjuntos.</p>';
+}
+async function openWorkFile(fileId){
+ if(!workOrderId)return;
+ const {data,error}=await authClient.from('service_order_files').select('storage_path').eq('id',fileId).eq('order_id',workOrderId).maybeSingle();
+ if(error||!data){workStatus('No se pudo localizar el archivo.');return}
+ const signed=await authClient.storage.from('estudio314-order-files').createSignedUrl(data.storage_path,60);
+ if(signed.error){workStatus('No se pudo abrir el archivo: '+signed.error.message);return}
+ window.open(signed.data.signedUrl,'_blank','noopener,noreferrer');
+}
+async function sendWorkFile(event){
+ event.preventDefault();if(!authClient||!workOrderId||!liveUser)return;
+ const input=document.getElementById('work-upload'),file=input.files[0];
+ if(!file)return;
+ if(!['application/pdf','image/png','image/jpeg','video/mp4'].includes(file.type)||file.size>20971520){workStatus('Archivo inválido: solo PDF, PNG, JPG o MP4 de hasta 20 MB.');return}
+ const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_').slice(-75);
+ const path=workOrderId+'/'+liveUser.id+'/'+crypto.randomUUID()+'-'+safeName;
+ const send=await authClient.storage.from('estudio314-order-files').upload(path,file,{contentType:file.type,upsert:false});
+ if(send.error){workStatus('No se pudo adjuntar: '+send.error.message);return}
+ const save=await authClient.rpc('register_order_file',{p_order:workOrderId,p_path:path,p_name:file.name.slice(0,180)});
+ if(save.error){workStatus('Se subió el archivo pero no se pudo registrar: '+save.error.message);return}
+ input.value='';workStatus('Material guardado de forma privada.');await refreshWorkFiles();
+}
+
 async function signOutAccount(){
  if(!authClient)return;const {error}=await authClient.auth.signOut();
  if(error){authText('No pudimos cerrar la sesión: '+authErr(error));return}

@@ -99,3 +99,11 @@ Se implementan directamente las mejoras técnicas no destructivas que no necesit
 - Supabase: migración `20261024_021_student_applications.sql`, tabla `student_applications` con RLS, funciones de postulación y registro de CV; bucket privado `estudio314-student-cvs` con control de titular y administración; bandeja administrativa con enlaces firmados de 60 segundos.
 - `Olvidé mi contraseña` corregido: recuperación visible desde el acceso principal, correo propio independiente del formulario oculto y modo `PASSWORD_RECOVERY` que mantiene visible la entrada de nueva contraseña.
 - **Verificado:** 19 tablas públicas con RLS, bucket de CV privado, `anon` sin poder invocar registro de CV, sintaxis de 2 scripts OK; **pendiente:** prueba con correo real de recuperación, envío de postulación, carga/lectura PDF y QA móvil.
+
+## Entrega: evaluación y seguimiento de estudiantes — 24/10/2026
+- Migración `20261024_022_student_reviews.sql`: eventos auditables por postulación, estados `recibida → en_revision / contactado / cerrada`, RPC de evaluación solo para administrador, control de cambios y fundamento de 10–600 caracteres.
+- Migración `20261024_023_student_review_privacy.sql`: notas de evaluación interna exclusivamente legibles por administradores; postulación y CV bloqueados para edición del estudiante una vez iniciada la revisión.
+- Administración: bandeja de Formación con filtro de estados, tarjetas con datos curriculares, sección desplegable para motivación, botón para abrir CV privado y campo de fundamento para cada decisión.
+- Estudiante: consulta de su estado desde la landing de Formación; sin acceso a notas administrativas ni seguimiento interno.
+- **Pruebas verificadas en SQL con rollback:** creación de postulación, autorización de cuenta admin, imposibilidad de aprobación con cuenta común, visibilidad del estado, ocultamiento de auditoría al aspirante y rechazo de modificación curricular durante la revisión. No se guardaron datos de ensayo.
+- **Pendiente** para producción: prueba desde navegador con PDF real no sensible; políticas de retención, eliminación de CV y privacidad estudiantil; revisión legal/laboral del programa antes de aceptar candidatos externos; comunicación de estado mediante canales autorizados, si se decide implementarla.

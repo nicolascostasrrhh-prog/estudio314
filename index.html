@@ -784,7 +784,8 @@ async function loadCrm(){
  if(error){list.textContent='No se pudieron consultar tus contactos: '+error.message;return}
  const active=data.filter(x=>!['ganado','cerrado'].includes(x.stage)).length;
  const overdue=data.filter(x=>!['ganado','cerrado'].includes(x.stage)&&x.follow_up_on&&x.follow_up_on<new Date().toISOString().slice(0,10)).length;
- summary.innerHTML='<div><strong>'+data.length+'</strong><span>Oportunidades (hasta 200)</span></div><div><strong>'+active+'</strong><span>Activas</span></div><div><strong>'+overdue+'</strong><span>Seguimientos vencidos</span></div>';
+ summary.innerHTML='<div><strong>'+data.length+'</strong><span>Oportunidades mostradas (máx. 200)</span></div><div><strong>'+active+'</strong><span>Activas mostradas</span></div><div><strong>'+overdue+'</strong><span>Vencidas mostradas</span></div>';
+ await refreshCrmReminders();
  list.innerHTML=data.length?data.map(x=>'<article class="crm-card"><div class="live-head"><div><strong>'+escapeHTML(x.contact_alias)+'</strong><p>'+escapeHTML(x.practice_area)+' · '+escapeHTML(CRM_STAGES[x.stage]||x.stage)+'</p></div><button class="auth-secondary" type="button" onclick="showCrmHistory(\''+escapeHTML(x.id)+'\')">Historial ↗</button></div><p class="small muted">'+escapeHTML(x.next_action||'Sin siguiente acción')+(x.follow_up_on?' · Fecha: '+escapeHTML(x.follow_up_on):'')+'</p><div id="crm-history-'+escapeHTML(x.id)+'"></div>'+(['ganado','cerrado'].includes(x.stage)?'<p class="small muted">Oportunidad finalizada.</p>':'<div class="crm-edit"><select id="crm-stage-'+escapeHTML(x.id)+'">'+Object.entries(CRM_STAGES).map(([val,label])=>'<option value="'+val+'" '+(val===x.stage?'selected':'')+'>'+label+'</option>').join('')+'</select><input id="crm-action-'+escapeHTML(x.id)+'" maxlength="280" placeholder="Próxima acción" value="'+escapeHTML(x.next_action||'')+'"><input id="crm-followup-'+escapeHTML(x.id)+'" type="date" value="'+escapeHTML(crmDate(x.follow_up_on))+'"><textarea id="crm-note-'+escapeHTML(x.id)+'" maxlength="600" placeholder="Motivo del cambio (mínimo 5 caracteres)"></textarea><button type="button" class="outline" onclick="updateCrm(\''+escapeHTML(x.id)+'\')">Registrar seguimiento</button></div>')+'</article>').join(''):'<p class="small muted">Todavía no agregaste oportunidades.</p>';
 }
 async function createCrmContact(event){
@@ -813,6 +814,47 @@ async function showCrmHistory(id){
  const box=document.getElementById('crm-history-'+id);if(!box)return;
  if(error){box.textContent='No se pudo cargar la actividad: '+error.message;return}
  box.innerHTML=data.map(x=>'<div class="timeline-event"><b>'+escapeHTML(CRM_STAGES[x.new_stage]||x.new_stage)+'</b> · '+escapeHTML(new Date(x.occurred_at).toLocaleString('es-AR'))+'<p>'+escapeHTML(x.note)+'</p></div>').join('');
+}
+
+
+async function refreshCrmReminders(){
+ if(!authClient||!liveUser)return;
+ const panel=document.getElementById('crm-reminders');
+ const [digest,soon]=await Promise.all([
+  authClient.rpc('my_crm_digest'),
+  authClient.from('crm_opportunities').select('id,contact_alias,next_action,follow_up_on,stage')
+  .eq('owner_id',liveUser.id).not('stage','in','(ganado,cerrado)')
+  .lte('follow_up_on',new Date(Date.now()+7*86400000).toISOString().slice(0,10))
+  .order('follow_up_on',{ascending:true}).limit(12)
+ ]);
+ if(digest.error||soon.error){
+  panel.textContent='No se pudieron cargar los recordatorios: '+(digest.error?.message||soon.error?.message);
+  return;
+ }
+ const counts=Array.isArray(digest.data)?digest.data[0]:digest.data;
+ const today=new Date().toISOString().slice(0,10);
+ panel.innerHTML='<div class="crm-reminder-top"><strong>'+Number(counts?.overdue||0)+' vencidos</strong><strong>'+Number(counts?.due_today||0)+' para hoy</strong><strong>'+Number(counts?.due_next_7_days||0)+' próximos 7 días</strong></div>'+
+ (soon.data.length?soon.data.map(x=>'<div class="crm-reminder-item"><span>'+escapeHTML(x.follow_up_on)+' · '+escapeHTML(x.contact_alias)+'</span><small>'+escapeHTML(x.next_action||'Sin acción definida')+'</small></div>').join(''):'<p class="small muted">Sin seguimientos pendientes para los próximos siete días.</p>')+
+ '<p class="small muted">Las alertas aparecen al abrir o actualizar tu cuenta. No se envían mensajes automáticos.</p>';
+}
+function crmCsvCell(value){
+ const raw=String(value??'').replace(/\r|\n/g,' ');
+ const safe=/^[=+@\-\t\r]/.test(raw)?"'"+raw:raw;
+ return '"'+safe.replace(/"/g,'""')+'"';
+}
+async function exportCrmCsv(){
+ if(!authClient||!liveUser||!liveProfile?.is_verified)return;
+ const {data,error}=await authClient.from('crm_opportunities')
+ .select('contact_alias,practice_area,contact_method,stage,next_action,follow_up_on,created_at')
+ .eq('owner_id',liveUser.id).order('created_at',{ascending:false}).limit(1000);
+ const notice=document.getElementById('crm-notice');
+ if(error){notice.textContent='No se pudo exportar: '+error.message;return}
+ const columns=['contact_alias','practice_area','contact_method','stage','next_action','follow_up_on','created_at'];
+ const csv='\uFEFF'+columns.join(',')+'\r\n'+(data||[]).map(x=>columns.map(c=>crmCsvCell(x[c])).join(',')).join('\r\n');
+ const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+ const anchor=document.createElement('a');anchor.href=url;anchor.download='estudio314_mi_crm.csv';document.body.appendChild(anchor);anchor.click();anchor.remove();
+ URL.revokeObjectURL(url);
+ notice.textContent='Se exportaron '+data.length+' registros (máximo 1000) en tu dispositivo. Guardá el archivo en un lugar seguro.';
 }
 
 async function signOutAccount(){

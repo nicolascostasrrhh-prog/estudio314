@@ -1641,6 +1641,96 @@ function updateAccountHome(){
 
 }
 
+
+const GROWTH_STATUS={diagnostico:'Diagnóstico',planificado:'Planificado',en_marcha:'En marcha',en_revision:'En revisión',pausado:'Pausado',pendiente:'Pendiente',en_proceso:'En proceso',completada:'Completada',cancelada:'Cancelada',recibida:'Recibida',incorporada:'Incorporada',cerrada:'Cerrada'};
+let growthAdminRequests=[],growthAdminPlans=[],growthAdminMembers=[],growthAdminActions=[];
+async function loadGrowthWorkspace(){
+ const panel=document.getElementById('growth-workspace');if(!panel||!authClient||!liveUser)return;
+ const status=document.getElementById('growth-plan-status'),actions=document.getElementById('growth-plan-actions');
+ const [plans,requests]=await Promise.all([
+  authClient.from('growth_plans').select('id,objective,diagnosis,status,month_start').eq('member_id',liveUser.id).maybeSingle(),
+  authClient.from('growth_requests').select('id,topic,message,status,created_at').eq('member_id',liveUser.id).order('created_at',{ascending:false}).limit(10)
+ ]);
+ if(plans.error){status.textContent='No se pudo consultar el plan: '+plans.error.message;return}
+ const plan=plans.data;
+ if(!plan){status.innerHTML='<strong>Tu plan todavía no fue iniciado.</strong><p>Contanos qué necesita tu estudio. El equipo de Estudio 3.14 revisará tu situación y propondrá prioridades.</p>';actions.innerHTML=''}
+ else{
+  status.innerHTML='<span class="growth-status-chip">'+escapeHTML(GROWTH_STATUS[plan.status]||plan.status)+'</span><h4>'+escapeHTML(plan.objective||'Plan de crecimiento en preparación')+'</h4>'+(plan.diagnosis?'<p>'+escapeHTML(plan.diagnosis)+'</p>':'');
+  const {data:steps,error:stepErr}=await authClient.from('growth_actions').select('title,detail,status').eq('plan_id',plan.id).order('sort_order',{ascending:true});
+  actions.innerHTML=stepErr?'<p>Sin acceso a las acciones.</p>':steps.length?steps.map(s=>'<div class="growth-step"><span class="growth-step-icon">'+(s.status==='completada'?'✓':'○')+'</span><div><strong>'+escapeHTML(s.title)+'</strong><p>'+escapeHTML(s.detail)+'</p></div><small>'+escapeHTML(GROWTH_STATUS[s.status]||s.status)+'</small></div>').join(''):'<p class="small muted">Las primeras prioridades aparecerán cuando se acuerde el plan.</p>';
+ }
+ const requestList=document.getElementById('growth-my-requests');
+ requestList.innerHTML=requests.error?'No se pudo consultar tus solicitudes.':requests.data.length?'<h5>Mis solicitudes</h5>'+requests.data.map(r=>'<div class="growth-request-row"><span>'+escapeHTML(r.message)+'</span><b>'+escapeHTML(GROWTH_STATUS[r.status]||r.status)+'</b></div>').join(''):'<p class="small muted">Todavía no presentaste solicitudes.</p>';
+ const enabled=Boolean(liveProfile?.is_verified);
+ const form=document.getElementById('growth-request-form');
+ form.querySelectorAll('input,textarea,select,button').forEach(control=>control.disabled=!enabled);
+ if(!enabled)document.getElementById('growth-feedback').textContent='El acompañamiento está disponible para profesionales con membresía verificada. No se está cobrando este programa.';
+}
+async function submitGrowthRequest(event){
+ event.preventDefault();if(!authClient||!liveUser)return;
+ const status=document.getElementById('growth-feedback'),button=document.getElementById('growth-send');
+ button.disabled=true;
+ const {error}=await authClient.rpc('submit_growth_request',{p_topic:document.getElementById('growth-topic').value,p_message:document.getElementById('growth-message').value.trim()});
+ status.textContent=error?'No se pudo enviar: '+authErr(error):'Solicitud recibida. La revisaremos para definir las próximas prioridades.';
+ if(!error){document.getElementById('growth-message').value='';await loadGrowthWorkspace()}
+ button.disabled=false;
+}
+async function loadGrowthAdmin(){
+ const panel=document.getElementById('growth-admin');if(!panel||!authClient||!liveUser)return;
+ const {data:allowed,error:permissionError}=await authClient.rpc('is_platform_admin',{p_user:liveUser.id});
+ panel.hidden=!!permissionError||allowed!==true;if(panel.hidden)return;
+ const [req,plans,members,actions]=await Promise.all([
+  authClient.from('growth_requests').select('id,member_id,topic,message,status,created_at').order('created_at',{ascending:false}).limit(100),
+  authClient.from('growth_plans').select('id,member_id,objective,diagnosis,status,operator_note').limit(150),
+  authClient.from('member_profiles').select('user_id,display_name,is_verified').eq('active',true).limit(150),
+  authClient.from('growth_actions').select('id,plan_id,title,detail,status,sort_order').limit(300)
+ ]);
+ if(req.error||plans.error||members.error||actions.error){document.getElementById('growth-admin-requests').textContent='No se pudieron cargar los planes y solicitudes.';return}
+ growthAdminRequests=req.data||[];growthAdminPlans=plans.data||[];growthAdminMembers=members.data||[];growthAdminActions=actions.data||[];
+ const name=id=>growthAdminMembers.find(m=>m.user_id===id)?.display_name||'Profesional';
+ document.getElementById('growth-admin-requests').innerHTML='<h5>Solicitudes recibidas</h5>'+(growthAdminRequests.length?growthAdminRequests.map(r=>'<div class="growth-admin-card"><strong>'+escapeHTML(name(r.member_id))+'</strong><span class="growth-status-chip">'+escapeHTML(GROWTH_STATUS[r.status]||r.status)+'</span><p>'+escapeHTML(r.message)+'</p>'+(r.status==='cerrada'?'':'<div class="growth-admin-form"><select id="gr-status-'+r.id+'"><option value="en_revision">En revisión</option><option value="incorporada">Incorporada al plan</option><option value="cerrada">Cerrada</option></select><input id="gr-note-'+r.id+'" placeholder="Fundamento breve (mín. 10 caracteres)"><button class="outline" type="button" onclick="reviewGrowthRequest(\''+r.id+'\')">Guardar estado</button></div>')+'</div>').join(''):'<p class="small muted">No hay solicitudes nuevas.</p>');
+ const memberOptions=growthAdminMembers.filter(m=>m.is_verified).map(m=>'<option value="'+escapeHTML(m.user_id)+'">'+escapeHTML(m.display_name)+'</option>').join('');
+ document.getElementById('growth-admin-plans').innerHTML='<h5>Plan mensual por profesional</h5><div class="growth-admin-form"><select id="growth-admin-member" onchange="renderGrowthAdminEditor()">'+(memberOptions||'<option value="">Sin profesionales habilitados</option>')+'</select></div><div id="growth-admin-editor"></div>';
+ renderGrowthAdminEditor();
+}
+function renderGrowthAdminEditor(){
+ const select=document.getElementById('growth-admin-member'),el=document.getElementById('growth-admin-editor');if(!select||!el)return;
+ const plan=growthAdminPlans.find(p=>p.member_id===select.value);
+ const value=x=>escapeHTML(x||'');
+ el.innerHTML='<div class="growth-admin-form"><label>Objetivo del mes<textarea id="ga-objective" maxlength="1200">'+value(plan?.objective)+'</textarea></label><label>Diagnóstico<textarea id="ga-diagnosis" maxlength="3000">'+value(plan?.diagnosis)+'</textarea></label><label>Estado<select id="ga-status">'+['diagnostico','planificado','en_marcha','en_revision','pausado'].map(s=>'<option value="'+s+'" '+(plan?.status===s?'selected':'')+'>'+escapeHTML(GROWTH_STATUS[s])+'</option>').join('')+'</select></label><label>Nota operativa privada<textarea id="ga-note" maxlength="1600">'+value(plan?.operator_note)+'</textarea></label><button class="primary" type="button" onclick="saveGrowthAdminPlan()">Guardar plan</button></div><div id="growth-action-editor"></div>';
+ if(plan){
+  const entries=growthAdminActions.filter(x=>x.plan_id===plan.id).sort((a,b)=>a.sort_order-b.sort_order);
+  document.getElementById('growth-action-editor').innerHTML='<h5>Acciones acordadas</h5>'+entries.map(x=>'<div class="growth-admin-card"><b>'+value(x.title)+'</b> · '+escapeHTML(GROWTH_STATUS[x.status])+'<p>'+value(x.detail)+'</p><button class="outline" type="button" onclick="editGrowthAction(\''+x.id+'\')">Editar acción</button></div>').join('')+'<div class="growth-admin-form"><input id="ga-action-id" type="hidden"><label>Acción<input id="ga-action-title" maxlength="160" placeholder="Ej. Organizar seguimiento de consultas"></label><label>Detalle<input id="ga-action-detail" maxlength="1200" placeholder="Alcance y resultado esperado"></label><label>Estado<select id="ga-action-status"><option value="pendiente">Pendiente</option><option value="en_proceso">En proceso</option><option value="completada">Completada</option><option value="cancelada">Cancelada</option></select></label><label>Orden<input type="number" id="ga-action-order" min="0" max="100" value="'+entries.length+'"></label><button class="outline" type="button" onclick="saveGrowthAction()">Guardar acción</button></div>';
+ }
+}
+function editGrowthAction(id){
+ const x=growthAdminActions.find(a=>a.id===id);if(!x)return;
+ document.getElementById('ga-action-id').value=id;
+ document.getElementById('ga-action-title').value=x.title;
+ document.getElementById('ga-action-detail').value=x.detail;
+ document.getElementById('ga-action-status').value=x.status;
+ document.getElementById('ga-action-order').value=x.sort_order;
+}
+async function saveGrowthAdminPlan(){
+ const member=document.getElementById('growth-admin-member')?.value;
+ if(!member)return;
+ const {error}=await authClient.rpc('manage_growth_plan',{p_member:member,p_objective:document.getElementById('ga-objective').value,p_diagnosis:document.getElementById('ga-diagnosis').value,p_status:document.getElementById('ga-status').value,p_note:document.getElementById('ga-note').value});
+ document.getElementById('growth-admin-feedback').textContent=error?authErr(error):'Plan guardado. No se ha generado ningún cobro ni contratación.';
+ if(!error)await loadGrowthAdmin();
+}
+async function saveGrowthAction(){
+ const plan=growthAdminPlans.find(p=>p.member_id===document.getElementById('growth-admin-member')?.value);
+ if(!plan){document.getElementById('growth-admin-feedback').textContent='Guardá primero el plan del profesional.';return}
+ const {error}=await authClient.rpc('manage_growth_action',{p_plan:plan.id,p_action:document.getElementById('ga-action-id').value||null,p_title:document.getElementById('ga-action-title').value,p_detail:document.getElementById('ga-action-detail').value,p_status:document.getElementById('ga-action-status').value,p_order:Number(document.getElementById('ga-action-order').value)});
+ document.getElementById('growth-admin-feedback').textContent=error?authErr(error):'Acción registrada.';
+ if(!error)await loadGrowthAdmin();
+}
+async function reviewGrowthRequest(id){
+ const {error}=await authClient.rpc('review_growth_request',{p_request:id,p_status:document.getElementById('gr-status-'+id).value,p_note:document.getElementById('gr-note-'+id).value});
+ document.getElementById('growth-admin-feedback').textContent=error?authErr(error):'Solicitud revisada.';
+ if(!error)await loadGrowthAdmin();
+}
+
 async function refreshCreditShop(){
  const holder=document.getElementById('credit-shop');
  if(!holder||!authClient||!liveUser)return;

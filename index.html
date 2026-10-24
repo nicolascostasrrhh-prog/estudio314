@@ -355,14 +355,14 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 <div class="auth-layout">
 <div class="auth-card" id="auth-forms">
 <div class="eyebrow">ACCESO A ESTUDIO 3.14</div><h3>Ingresá o registrate</h3>
-<div class="passwordless-card"><div class="eyebrow">ACCESO MÁS FÁCIL</div><h4>Ingresá con un enlace por correo</h4><p>Sin contraseña. Escribí tu correo una sola vez y abrí el enlace que recibas. Si todavía no tenés cuenta, Supabase podrá crearla como perfil pendiente de verificación.</p><form id="magic-form" onsubmit="sendMagicLink(event)"><label for="magic-email">Tu correo electrónico</label><div class="magic-input-row"><input type="email" id="magic-email" required autocomplete="email" placeholder="tu@email.com"><button class="primary" type="submit" id="magic-send">Enviar enlace ↗</button></div></form><div class="magic-message" id="magic-message" role="status" aria-live="polite">Te enviaremos un enlace para entrar, sin contraseña.</div></div><details class="auth-password-details"><summary>¿Preferís ingresar con contraseña?</summary><div class="auth-alternative">Acceso alternativo</div>
+<div class="passwordless-card"><div class="eyebrow">ACCESO MÁS FÁCIL</div><h4>Ingresá con un enlace por correo</h4><p>Sin contraseña. Escribí tu correo una sola vez y abrí el enlace que recibas. Si todavía no tenés cuenta, Supabase podrá crearla como perfil pendiente de verificación.</p><form id="magic-form" onsubmit="sendMagicLink(event)"><label for="magic-email">Tu correo electrónico</label><div class="magic-input-row"><input type="email" id="magic-email" required autocomplete="email" placeholder="tu@email.com"><button class="primary" type="submit" id="magic-send">Enviar enlace ↗</button></div></form><div class="magic-message" id="magic-message" role="status" aria-live="polite">Te enviaremos un enlace para entrar, sin contraseña.</div><button type="button" class="auth-secondary" onclick="openResetPassword()">¿Olvidaste tu contraseña?</button><div id="reset-email-panel" class="reset-email-panel" hidden><label for="reset-email-address">Correo de recuperación</label><input id="reset-email-address" type="email" autocomplete="email" placeholder="tu@email.com"><button class="outline" type="button" id="reset-send" onclick="resetPassword()">Enviar enlace para restablecer ↗</button><p id="reset-feedback" aria-live="polite"></p></div></div><details class="auth-password-details"><summary>¿Preferís ingresar con contraseña?</summary><div class="auth-alternative">Acceso alternativo</div>
 <div class="auth-tabs"><button type="button" id="tab-login" class="active" onclick="authTab('login')">Ingresar</button><button type="button" id="tab-register" onclick="authTab('register')">Crear cuenta</button></div>
 <form id="auth-form" onsubmit="submitAuth(event)">
 <div id="auth-name-row" class="field" hidden><label for="auth-name">Nombre y apellido</label><input id="auth-name" autocomplete="name" maxlength="120"></div>
 <div class="field"><label for="auth-email">Correo electrónico</label><input id="auth-email" type="email" required autocomplete="email"></div>
 <div class="field"><label for="auth-password">Contraseña (mínimo 8 caracteres)</label><input id="auth-password" type="password" minlength="8" required autocomplete="current-password"></div>
 <button class="primary wide-action" type="submit" id="auth-submit">Ingresar a mi cuenta ↗</button>
-<button type="button" class="auth-secondary" onclick="resetPassword()">Olvidé mi contraseña</button><div id="password-recovery" class="field" hidden><label for="new-password">Nueva contraseña</label><input id="new-password" type="password" minlength="8" autocomplete="new-password"><button type="button" class="outline wide-action" onclick="saveNewPassword()">Guardar nueva contraseña</button></div>
+<button type="button" class="auth-secondary" onclick="openResetPassword()">Olvidé mi contraseña</button><div id="password-recovery" class="field" hidden><label for="new-password">Nueva contraseña</label><input id="new-password" type="password" minlength="8" autocomplete="new-password"><button type="button" class="outline wide-action" onclick="saveNewPassword()">Guardar nueva contraseña</button></div>
 </form><p class="small muted">El registro queda pendiente de verificación y admisión. Registrarse no habilita automáticamente la prestación de servicios jurídicos en la plataforma.</p></details>
 </div>
 <div class="auth-card" id="account-profile" hidden>
@@ -1325,17 +1325,29 @@ async function saveNewPassword(){
  authText(error?'No se pudo actualizar: '+authErr(error):'Contraseña actualizada. Podés usarla para ingresar.');
  if(!error){document.getElementById('password-recovery').hidden=true;document.getElementById('new-password').value='';}
 }
+function openResetPassword(){
+ const panel=document.getElementById('reset-email-panel');panel.hidden=false;
+ document.getElementById('reset-email-address').value=document.getElementById('magic-email').value||document.getElementById('auth-email').value||'';
+ panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+ document.getElementById('reset-email-address').focus();
+}
 async function resetPassword(){
- if(!authClient){authText('La recuperación de contraseñas estará disponible cuando se conecte Supabase.');return}
- const email=document.getElementById('auth-email').value.trim();
- if(!email){authText('Primero escribí tu correo electrónico.');return}
+ const output=document.getElementById('reset-feedback'),button=document.getElementById('reset-send');
+ if(!authClient){output.textContent='La recuperación de contraseña no está disponible.';return}
+ const email=document.getElementById('reset-email-address').value.trim();
+ if(!email||!document.getElementById('reset-email-address').checkValidity()){output.textContent='Ingresá un correo electrónico válido.';return}
+ button.disabled=true;output.textContent='Solicitando enlace de recuperación...';
+ try{
  const {error}=await authClient.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
- authText(error?'No se pudo solicitar el correo de recuperación: '+authErr(error):'Si el correo está registrado, recibirás instrucciones de recuperación.');
+ if(error)throw error;
+ output.textContent='✓ Solicitud enviada. Revisá el correo y abrí el enlace de recuperación. Si no aparece, mirá en Spam.';
+ }catch(err){output.textContent='No se pudo solicitar la recuperación: '+authErr(err)}
+ finally{button.disabled=false}
 }
 if(authReady){
  authClient=window.supabase.createClient(authCfg.url,authCfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
  authText('Servicio de autenticación conectado. Podés ingresar o registrarte.');
- authClient.auth.onAuthStateChange((event)=>{if(event==='SIGNED_IN'){go('cuenta');}else if(event==='INITIAL_SESSION' && new URLSearchParams(location.search).has('cuenta')){go('cuenta');history.replaceState(null,'',location.pathname);}if(event==='PASSWORD_RECOVERY'){document.getElementById('password-recovery').hidden=false;authText('Elegí tu nueva contraseña y guardala.');}else{setTimeout(()=>displayAccount(),0)}});
+ authClient.auth.onAuthStateChange((event)=>{if(event==='SIGNED_IN'){go('cuenta');}else if(event==='INITIAL_SESSION' && new URLSearchParams(location.search).has('cuenta')){go('cuenta');history.replaceState(null,'',location.pathname);}if(event==='PASSWORD_RECOVERY'){go('cuenta');document.getElementById('auth-forms').hidden=false;document.getElementById('account-profile').hidden=true;document.querySelector('.auth-password-details').open=true;document.getElementById('password-recovery').hidden=false;authText('Elegí y guardá tu nueva contraseña.');}else{setTimeout(()=>displayAccount(),0)}});
  if(new URLSearchParams(location.search).has('cuenta'))go('cuenta');
  displayAccount();
 }else{

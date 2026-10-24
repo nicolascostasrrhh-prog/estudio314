@@ -61,3 +61,14 @@ La sección **Mi cuenta** ya tiene lectura autenticada de perfil, categoría y s
 Se aplicó la quinta migración `estudio314_operational_indexes` (siete índices para FKs) y se comprobó el proyecto `ACTIVE_HEALTHY` con 8 tablas y RLS. Se verificó además que una consulta sin autenticación no recibe filas de perfiles ni pedidos.
 
 **Pendientes:** establecer/comprobar `Authentication → URL Configuration`, confirmar entrega efectiva del correo y registro con un usuario autorizado; validar revisión de matrícula, panel administrativo, solicitudes con avales reales y tarifas/beneficios económicos. La auditoría de `SECURITY DEFINER` necesita pruebas de autorización funcional antes de abrir el sistema masivamente.
+
+## Sistema de membresías: implementación del 23/10/2026
+
+- Migraciones instaladas: `estudio314_membership_admission` y `estudio314_membership_guard` (total 7).
+- Tabla `public.membership_requests`, RLS activo, para solicitudes de profesionales: modalidad comercial, matrícula, colegio y provincia, estado, revisión, fundamento, fechas y administrador.
+- El aspirante puede presentar solicitudes desde **Mi cuenta**. La función de servidor exige identidad autenticada y perfil no verificado, valida datos y evita varias solicitudes pendientes. Enviar una solicitud no crea cobros.
+- La interfaz administrativa solo se muestra al rol asignado en `public.platform_admins`; la función `review_membership_request` impide la aprobación por usuarios no administradores.
+- Aprobar cambia el estado de verificación profesional y la modalidad elegida; **no cambia la categoría institucional**, no asigna créditos y no supone que los precios ilustrativos estén aprobados.
+- El estado y las resoluciones quedan consultables para el profesional. Los números de matrícula se restringen por RLS al titular y administradores.
+- Verificado: 9 tablas, RLS habilitado en todas, 7 migraciones, JS sin errores de sintaxis. **No** se completó un registro y revisión de un usuario real porque todavía no hay cuentas registradas ni administradores aprovisionados.
+- Pendiente de producción: proceso de verificación de matrícula, reglas y aceptación de términos, privacidad y consentimiento, panel de administrador constituido, sistema de cuotas/facturas/beneficios y pruebas end-to-end con usuarios autorizados.

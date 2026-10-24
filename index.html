@@ -155,7 +155,71 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 #account-tab-panels>.account-tab-panel{animation:account-in .18s ease-out}
 @keyframes account-in{from{opacity:.6;transform:translateY(5px)}to{opacity:1;transform:none}}
 @media(max-width:600px){.credit-shop-balance{padding:17px}.credit-shop-balance strong{font-size:30px}}
-.account-welcome h3{font:800 23px Manrope,Arial,sans-serif;margin:0 0 6px}.account-welcome p{margin:0 0 17px;color:#61747f;font-size:13px}.account-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:18px}.account-shortcut{padding:20px 18px;text-align:left;border:1px solid #d6e0e3;background:#fff;border-radius:11px;display:grid;gap:6px;cursor:pointer;transition:border-color .2s,transform .2s;color:#2b3b45}.account-shortcut:hover{border-color:#7999a7;transform:translateY(-2px)}.account-shortcut strong{font:800 15px Manrope,Arial,sans-serif}.account-shortcut span{font-size:11px;color:#627885}@media(max-width:580px){.account-shortcuts{grid-template-columns:1fr}}.admin-inner-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 16px;padding:9px;background:#293b46;border:1px solid #526c7a;border-radius:10px}.admin-inner-tabs button{flex:1;min-width:140px;padding:12px 11px;color:#bdced7;background:transparent;border:1px solid transparent;border-radius:7px;cursor:pointer;font:800 12px Manrope,Arial,sans-serif}.admin-inner-tabs button.is-active{background:#e9f1f3;color:#304653}.admin-view[hidden]{display:none!important}.admin-view{padding:2px}.admin-view>.admin-command-pane{margin:0}.admin-view>.membership-enrollment{background:#eef3f5;color:#293e49;border-radius:8px;margin-top:16px;padding:18px}.admin-view .admin-command-grid{grid-template-columns:1fr 1fr}@media(max-width:760px){.admin-inner-tabs button{min-width:calc(50% - 8px)}.admin-view .admin-command-grid{grid-template-columns:1fr}}.account-next-action{display:flex;justify-content:space-between;gap:24px;align-items:center;margin-top:19px;padding:23px 24px;background:#334955;color:#fff;border-radius:12px}.account-next-action .account-action-eyebrow{font-size:10px;letter-spacing:.11em;color:#bdd1dc;font-weight:800}.account-next-action h4{font:800 22px Manrope,Arial,sans-serif;margin:5px 0}.account-next-action p{font-size:12px;color:#cbd7dd;max-width:450px;margin:0}.account-next-action button{flex-shrink:0}@media(max-width:680px){.account-next-action{display:block;padding:18px}.account-next-action button{margin-top:16px;width:100%}}</style></head><body>
+.account-welcome h3{font:800 23px Manrope,Arial,sans-serif;margin:0 0 6px}.account-welcome p{margin:0 0 17px;color:#61747f;font-size:13px}.account-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:18px}.account-shortcut{padding:20px 18px;text-align:left;border:1px solid #d6e0e3;background:#fff;border-radius:11px;display:grid;gap:6px;cursor:pointer;transition:border-color .2s,transform .2s;color:#2b3b45}.account-shortcut:hover{border-color:#7999a7;transform:translateY(-2px)}.account-shortcut strong{font:800 15px Manrope,Arial,sans-serif}.account-shortcut span{font-size:11px;color:#627885}@media(max-width:580px){.account-shortcuts{grid-template-columns:1fr}}.admin-inner-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 16px;padding:9px;background:#293b46;border:1px solid #526c7a;border-radius:10px}.admin-inner-tabs button{flex:1;min-width:140px;padding:12px 11px;color:#bdced7;background:transparent;border:1px solid transparent;border-radius:7px;cursor:pointer;font:800 12px Manrope,Arial,sans-serif}.admin-inner-tabs button.is-active{background:#e9f1f3;color:#304653}.admin-view[hidden]{display:none!important}.admin-view{padding:2px}.admin-view>.admin-command-pane{margin:0}.admin-view>.membership-enrollment{background:#eef3f5;color:#293e49;border-radius:8px;margin-top:16px;padding:18px}.admin-view .admin-command-grid{grid-template-columns:1fr 1fr}@media(max-width:760px){.admin-inner-tabs button{min-width:calc(50% - 8px)}.admin-view .admin-command-grid{grid-template-columns:1fr}}.account-next-action{display:flex;justify-content:space-between;gap:24px;align-items:center;margin-top:19px;padding:23px 24px;background:#334955;color:#fff;border-radius:12px}.account-next-action .account-action-eyebrow{font-size:10px;letter-spacing:.11em;color:#bdd1dc;font-weight:800}.account-next-action h4{font:800 22px Manrope,Arial,sans-serif;margin:5px 0}.account-next-action p{font-size:12px;color:#cbd7dd;max-width:450px;margin:0}.account-next-action button{flex-shrink:0}@media(max-width:680px){.account-next-action{display:block;padding:18px}.account-next-action button{margin-top:16px;width:100%}}
+/* Estudio 3.14 — software workspace */
+#cuenta:has(.premium-account)>.interior-hero{display:none}
+#cuenta:has(.premium-account)>.auth-status{max-width:none;padding:7px 25px;margin:0;border-radius:0;font-size:11px}
+#cuenta:has(.premium-account)>.auth-layout{max-width:none;width:100%;margin:0}
+#cuenta:has(.premium-account){padding:0;max-width:none;background:#eff1f3}
+#cuenta .premium-account{padding:0!important;border:0!important;background:transparent!important;max-width:none!important;width:100%;box-shadow:none!important}
+.premium-shell{display:grid;grid-template-columns:242px minmax(0,1fr);min-height:calc(100vh - 80px);font-family:Inter,Manrope,Arial,sans-serif;color:#273038}
+.premium-side{background:linear-gradient(165deg,#22282d,#171c21);color:#d7dde0;padding:26px 15px;display:flex;flex-direction:column;gap:25px;min-height:760px}
+.premium-brand{padding:2px 19px 27px;border-bottom:1px solid #333b42;display:flex;flex-direction:column;align-items:flex-start}
+.premium-brand>span{font-family:Georgia,serif;color:#e6c6b6;font-size:46px;line-height:1.06;letter-spacing:-.07em}
+.premium-brand small{font-size:9px;letter-spacing:.24em;color:#b5b8bc;margin-top:7px}
+.premium-side-label{color:#737e87;font-size:9px;letter-spacing:.17em;font-weight:800;padding:0 17px}
+.premium-shell .account-tabs{display:flex;flex-direction:column;gap:5px;margin:0;padding:0;border:0;overflow:visible}
+.premium-shell .account-tabs button{background:transparent;border:0;color:#bdc4cb;text-align:left;border-radius:8px;padding:14px 16px;font-size:13px;min-width:0;transition:background .16s,color .16s}
+.premium-shell .account-tabs button::before{content:'◦';font-size:17px;margin-right:13px;vertical-align:-1px;color:#86929a}
+.premium-shell .account-tabs button[data-account-tab="inicio"]::before{content:'⌂'}
+.premium-shell .account-tabs button[data-account-tab="membresia"]::before{content:'♛'}
+.premium-shell .account-tabs button[data-account-tab="trabajo"]::before{content:'▤'}
+.premium-shell .account-tabs button[data-account-tab="creditos"]::before{content:'◉'}
+.premium-shell .account-tabs button[data-account-tab="contactos"]::before{content:'♧'}
+.premium-shell .account-tabs button[data-account-tab="perfil"]::before{content:'♙'}
+.premium-shell .account-tabs button[data-account-tab="administracion"]::before{content:'⚙'}
+.premium-shell .account-tabs button.is-active{background:#413732!important;color:#ffe9de!important;box-shadow:inset 3px 0 #bf7656}
+.premium-shell .account-tabs button.is-active::before{color:#dc9b7f}
+.premium-side-foot{margin-top:auto;border:1px solid #394047;border-radius:10px;padding:20px;color:#eee8e4}
+.premium-side-foot .premium-monogram{font-size:26px;color:#d68c6c;margin-bottom:14px}
+.premium-side-foot strong{font-family:Georgia,serif;font-weight:400;font-size:18px}
+.premium-side-foot p{font-size:11px;line-height:1.55;color:#9ba4ad;margin:10px 0 0}
+.premium-content{min-width:0;padding:0 26px 32px;background:linear-gradient(180deg,#f6f7f8,#eeeff0)}
+.premium-topbar{display:flex;justify-content:space-between;align-items:center;gap:14px;min-height:75px}
+.premium-search{border:1px solid #e3e6e9;background:#fff;color:#9da4ae;padding:13px 18px;border-radius:10px;font-size:12px;text-align:left;min-width:min(370px,50vw);cursor:pointer}
+.premium-who{display:flex;align-items:center;gap:11px}
+.premium-avatar{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:#283039;color:#e9c8b9;font-family:Georgia,serif;font-size:12px}
+.premium-identity{display:grid;gap:2px}
+.premium-shell #account-name{margin:0!important;font-size:12px!important;font-weight:750!important;color:#273038!important;font-family:Inter,Arial,sans-serif!important}
+.premium-shell #account-email{margin:0!important;color:#737f88!important;font-size:10px!important}
+.premium-hero{border-radius:11px;background:linear-gradient(107deg,rgba(24,27,31,.98) 0%,rgba(42,41,42,.96) 62%,rgba(68,57,52,.95) 100%);padding:34px 37px;color:#fff;display:flex;justify-content:space-between;gap:20px;align-items:center;min-height:155px;box-shadow:0 10px 24px rgba(35,39,44,.08)}
+.premium-eyebrow{font-size:10px;letter-spacing:.21em;color:#d5b7a7;font-weight:750}
+.premium-hero h2{font-family:Georgia,serif;font-size:35px;font-weight:400;line-height:1.13;margin:10px 0;color:#fff}
+.premium-hero p{font-size:12px;color:#d7d5d5;margin:0}
+.premium-hero-sign{font:38px Georgia,serif;color:#bb927d;white-space:nowrap}
+.premium-hero-sign span{display:block;color:#adabaa;font:9px Inter,Arial,sans-serif;letter-spacing:.14em}
+.premium-shell #account-tab-panels{padding-top:20px}
+.premium-shell .account-tab-panel{min-width:0}
+.premium-shell #account-overview{background:none;border:0;padding:0}
+.premium-shell .account-welcome{display:none}
+.premium-shell #account-overview .account-kpis{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.premium-shell #account-overview .account-kpis>div{border:1px solid #e4e6e9;border-radius:11px;background:white;padding:21px;box-shadow:0 4px 15px rgba(0,0,0,.025)}
+.premium-shell #account-overview .account-kpis span{font-size:10px;letter-spacing:.05em;color:#69747b}
+.premium-shell #account-overview .account-kpis strong{font-size:21px;color:#303840}
+.premium-shell .account-next-action{background:#263039;border-radius:11px;margin-top:17px}
+.premium-shell .account-shortcuts{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:18px}
+.premium-shell .account-shortcut{min-height:120px}
+.premium-shell .account-shortcut:hover{border-color:#c68164}
+.premium-shell .admin-command{background:transparent;padding:0}
+.premium-shell .admin-metrics>div,.premium-shell .admin-command-pane{border-radius:11px}
+.premium-shell .admin-inner-tabs{background:#e5e8ea;border:none;padding:6px}
+.premium-shell .admin-inner-tabs button{color:#596b78}
+.premium-shell .admin-inner-tabs button.is-active{background:#fff;color:#2b3945}
+.premium-mobile-menu{display:none}
+@media(max-width:1100px){.premium-shell{grid-template-columns:205px minmax(0,1fr)}.premium-side{padding:22px 10px}.premium-content{padding:0 15px 24px}.premium-shell .account-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}.premium-hero-sign{display:none}}
+@media(max-width:730px){.premium-shell{display:block}.premium-side{display:none;position:absolute;z-index:50;top:auto;left:0;width:min(280px,90vw);box-shadow:0 15px 35px #0005;min-height:80vh}.premium-side.mobile-open{display:flex}.premium-content{padding:0 12px 25px}.premium-topbar{min-height:61px}.premium-search{min-width:0;flex:1;max-width:220px;font-size:10px}.premium-hero{padding:24px 20px;min-height:130px}.premium-hero h2{font-size:27px}.premium-mobile-menu{display:block;margin:10px 0;padding:8px 13px;border:1px solid #d8dfe4;border-radius:7px;background:white;color:#38444c}.premium-shell #account-overview .account-kpis{grid-template-columns:1fr}.premium-shell .account-shortcuts{grid-template-columns:1fr 1fr}.premium-who .premium-identity{display:none}}
+@media(max-width:450px){.premium-shell .account-shortcuts{grid-template-columns:1fr}.premium-search{font-size:0}.premium-search::before{content:'Buscar funciones';font-size:11px}}
+</style></head><body>
 <header><div class="brand">ESTUDIO <span>3.14</span></div><nav aria-label="Secciones"><button onclick="go('inicio')">Inicio</button><button onclick="go('buscar')">Buscar abogado</button><button onclick="go('membresias')">Membresías</button><button onclick="go('panel')">Panel de miembro</button><button onclick="go('avales')">Avales</button><button class="nav-account" onclick="go('cuenta')">Mi cuenta ↗</button></nav></header>
 <main>
 <section id="inicio" class="active">

@@ -363,6 +363,26 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 .studio-brief-summary strong{display:block;margin-top:4px;font:800 18px Inter,Manrope,Arial,sans-serif;color:#31434e}
 .studio-brief-summary>p{grid-column:1/-1;margin:2px 0 0;font-size:12px;color:#4b6470}
 @media(max-width:700px){.studio-services-toolbar,.studio-detail-columns{grid-template-columns:1fr}.studio-service-bottom{flex-wrap:wrap}.studio-brief-summary{grid-template-columns:1fr}.studio-brief-summary>p{grid-column:auto}}
+
+.studio-order-card{background:#fff;border:1px solid #e1e7ea;border-radius:12px;padding:21px;margin:15px 0;box-shadow:0 5px 18px #1c2c360b}
+.studio-order-title{display:flex;justify-content:space-between;gap:12px;align-items:start}
+.studio-order-title small{color:#bd795a;font-size:10px;font-weight:800;letter-spacing:.09em}
+.studio-order-title h5{font:600 23px Georgia,serif;margin:7px 0;color:#293d47}
+.studio-order-title p{color:#6f8089;font-size:11px;margin:0}
+.studio-order-badge{background:#e8edf1;color:#50616b;border-radius:20px;padding:9px 12px;font-size:11px;font-weight:800;white-space:nowrap}
+.studio-order-badge.done{background:#dcece1;color:#3f7655}
+.studio-order-badge.canceled{background:#f3e1e0;color:#a34d43}
+.studio-order-progress{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:24px 0 16px}
+.studio-order-progress>div{display:grid;gap:7px;place-items:center;text-align:center;position:relative;color:#a1afb7}
+.studio-order-progress>div:not(:first-child)::before{content:"";position:absolute;width:calc(100% - 22px);height:2px;background:#e4e9ec;left:calc(-50% + 11px);top:13px}
+.studio-order-progress>div.passed:not(:first-child)::before{background:#b9856c}
+.studio-order-progress span{width:27px;height:27px;border:1px solid #dce4e8;border-radius:50%;display:grid;place-items:center;background:#f2f5f6;font-size:11px;font-weight:800}
+.studio-order-progress .passed span{background:#b9856c;color:#fff;border-color:#b9856c}
+.studio-order-progress small{font-size:10px;font-weight:700}
+.studio-order-progress .passed small{color:#536a74}
+.studio-order-actions{display:flex;flex-wrap:wrap;gap:10px}
+.studio-order-actions button{font-size:11px}
+@media(max-width:600px){.studio-order-card{padding:14px}.studio-order-title{flex-wrap:wrap}.studio-order-progress{gap:2px}.studio-order-progress small{font-size:9px}.studio-order-actions button{width:100%}}
 </style></head><body>
 <header><div class="brand">ESTUDIO <span>3.14</span></div><nav aria-label="Secciones"><button onclick="go('inicio')">Inicio</button><button onclick="go('buscar')">Buscar abogado</button><button onclick="go('membresias')">Membresías</button><button onclick="go('panel')">Panel de miembro</button><button onclick="go('formacion')">Estudiantes</button><button class="nav-account" onclick="go('cuenta')">Mi cuenta ↗</button></nav></header>
 <main>

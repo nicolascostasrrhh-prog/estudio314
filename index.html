@@ -372,6 +372,7 @@ async function displayAccount(){
  document.getElementById('auth-forms').hidden=Boolean(user);
  document.getElementById('account-profile').hidden=!user;
  if(!user){liveProfile=null;liveUser=null;authText('Ingresá o registrate para acceder a tu cuenta.');return}
+ createAccountTabs();
  document.getElementById('account-email').textContent=user.email||'';
  const {data:profile,error:profileError}=await authClient.from('member_profiles').select('display_name,category,is_verified,subscription,member_since').eq('user_id',user.id).maybeSingle();
  liveProfile=profile||null;liveUser=user;
@@ -388,6 +389,7 @@ async function displayAccount(){
  await loadAdminRoster();
  await loadMyDirectory();
  await loadCrm();
+ if(accountTabsReady)showAccountTab(document.querySelector('.account-tab.is-active')?.dataset.accountTab||'inicio');
 }
 
 function liveText(id,message){document.getElementById(id).textContent=message}
@@ -914,6 +916,61 @@ function renderAdminRoster(){
  area.innerHTML+='<p class="small muted">Se muestran hasta 150 perfiles recientes. Las admisiones se resuelven desde su bandeja específica, con matrícula comprobada y fundamento.</p>';
 }
 
+
+const ACCOUNT_TABS=[
+ ['inicio','Resumen',['account-overview']],
+ ['membresia','Membresía',['membership-ui','originario-workspace']],
+ ['trabajo','Servicios',['service-brief','order-workspace','member-live-area']],
+ ['contactos','CRM',['lawyer-crm']],
+ ['perfil','Perfil público',['directory-editor']],
+ ['administracion','Administración',['admin-command','member-admin','promotion-admin-workspace']]
+];
+let accountTabsReady=false;
+function createAccountTabs(){
+ if(accountTabsReady)return;
+ const parent=document.getElementById('account-profile');if(!parent)return;
+ const sections=new Map();
+ const overview=document.createElement('div');overview.id='account-overview';overview.className='account-section';
+ const categories=document.querySelector('.account-kpis');
+ const subtitle=categories?.nextElementSibling;
+ if(categories)overview.appendChild(categories);
+ if(subtitle&&subtitle.matches('p'))overview.appendChild(subtitle);
+ sections.set('account-overview',overview);
+ const enrollment=document.getElementById('membership-request-form')?.closest('.membership-enrollment');
+ if(enrollment){enrollment.id='membership-ui';sections.set('membership-ui',enrollment)}
+ for(const id of ['originario-workspace','service-brief','order-workspace','member-live-area','lawyer-crm','directory-editor','admin-command','member-admin','promotion-admin-workspace']){
+  const el=document.getElementById(id);if(el)sections.set(id,el);
+ }
+ const tabbar=document.createElement('nav');tabbar.className='account-tabs';tabbar.setAttribute('aria-label','Secciones de Mi cuenta');
+ const area=document.createElement('div');area.id='account-tab-panels';
+ for(const [id,label,items] of ACCOUNT_TABS){
+  const tab=document.createElement('button');tab.type='button';tab.textContent=label;
+  tab.dataset.accountTab=id;tab.className='account-tab';
+  tab.addEventListener('click',()=>showAccountTab(id));
+  tabbar.appendChild(tab);
+  const panel=document.createElement('div');panel.id='account-tab-'+id;panel.className='account-tab-panel';
+  for(const itemId of items){const el=sections.get(itemId);if(el)panel.appendChild(el)}
+  area.appendChild(panel);
+ }
+ const before=document.getElementById('account-name');
+ before.insertAdjacentElement('afterend',tabbar);
+ tabbar.insertAdjacentElement('afterend',area);
+ accountTabsReady=true;
+ showAccountTab('inicio');
+}
+function showAccountTab(id){
+ if(!accountTabsReady)return;
+ const isAdmin=!document.getElementById('admin-command').hidden;
+ document.querySelectorAll('.account-tab').forEach(button=>{
+  const hide=button.dataset.accountTab==='administracion'&&!isAdmin;
+  button.hidden=hide;
+  const active=button.dataset.accountTab===id;
+  button.classList.toggle('is-active',active);button.setAttribute('aria-current',active?'page':'false');
+ });
+ if(id==='administracion'&&!isAdmin)id='inicio';
+ document.querySelectorAll('.account-tab-panel').forEach(el=>{el.hidden=el.id!=='account-tab-'+id});
+}
+
 async function signOutAccount(){
  if(!authClient)return;const {error}=await authClient.auth.signOut();
  if(error){authText('No pudimos cerrar la sesión: '+authErr(error));return}
@@ -937,7 +994,8 @@ async function resetPassword(){
 if(authReady){
  authClient=window.supabase.createClient(authCfg.url,authCfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
  authText('Servicio de autenticación conectado. Podés ingresar o registrarte.');
- authClient.auth.onAuthStateChange((event)=>{if(event==='PASSWORD_RECOVERY'){document.getElementById('password-recovery').hidden=false;authText('Elegí tu nueva contraseña y guardala.');}else{setTimeout(()=>displayAccount(),0)}});
+ authClient.auth.onAuthStateChange((event)=>{if(event==='SIGNED_IN'||event==='INITIAL_SESSION'){if(new URLSearchParams(location.search).has('cuenta')){go('cuenta');history.replaceState(null,'',location.pathname);}}if(event==='PASSWORD_RECOVERY'){document.getElementById('password-recovery').hidden=false;authText('Elegí tu nueva contraseña y guardala.');}else{setTimeout(()=>displayAccount(),0)}});
+ if(new URLSearchParams(location.search).has('cuenta'))go('cuenta');
  displayAccount();
 }else{
  authText('Versión de demostración: el registro real se habilitará cuando Estudio 3.14 conecte su base de datos y servicio de identidad.');

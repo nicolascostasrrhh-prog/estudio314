@@ -1384,7 +1384,7 @@ function renderServiceDrafts(){
  '<div><b>'+serviceDraftCache.filter(x=>x.credit_cost!=null).length+'</b><span>Con costo propuesto</span></div>';
  area.innerHTML=serviceDraftCache.map(x=>{
  const scope=x.scope&&typeof x.scope==='object'?x.scope:{};
- const list=arr=>Array.isArray(arr)?arr.join('\\n'):'';
+ const list=arr=>Array.isArray(arr)?arr.join('\n'):'';
  return '<article class="service-draft-card"><div class="service-draft-head"><div><small>'+escapeHTML(x.category)+'</small><h5>'+escapeHTML(x.title)+'</h5><p>'+escapeHTML(x.summary)+'</p></div><span class="student-status-chip">'+(x.credit_cost==null?'Sin precio':x.ready_for_review?'Listo para revisión':'Precio propuesto')+'</span></div><details><summary>Editar alcance y condiciones ↗</summary>'+
  '<div class="service-draft-form"><label>Nombre del servicio<input id="sd-title-'+x.id+'" maxlength="140" value="'+escapeHTML(x.title)+'"></label>'+
  '<label>Categoría<input id="sd-category-'+x.id+'" maxlength="90" value="'+escapeHTML(x.category)+'"></label>'+
@@ -1402,7 +1402,7 @@ async function saveServiceDraft(id){
  const entry=serviceDraftCache.find(x=>x.id===id);
  if(!entry||!authClient)return;
  const field=name=>document.getElementById('sd-'+name+'-'+id);
- const lines=name=>field(name).value.split(/\\r?\\n/).map(x=>x.trim()).filter(Boolean).slice(0,15);
+ const lines=name=>field(name).value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).slice(0,15);
  const cost=field('credits').value.trim(),ready=field('ready').checked;
  const status=document.getElementById('service-draft-message');
  if(cost&&(!Number.isInteger(Number(cost))||Number(cost)<1||Number(cost)>100000)){status.textContent='Ingresá una cantidad válida de créditos.';return}

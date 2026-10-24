@@ -105,7 +105,7 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 .publishing-note{display:grid;grid-template-columns:1.2fr .8fr;gap:30px;margin:0 0 20px;padding:30px;background:#323d45;color:#f4f6f7;border:1px solid #55636e}.publishing-note .eyebrow{color:#bbcbd4}.publishing-note h3{font-size:26px;margin:12px 0}.publishing-note p{font-size:13px;color:#d0d9df;max-width:650px}.publishing-steps{display:grid;align-content:center;gap:9px}.publishing-steps span{border-bottom:1px solid #65757e;padding:8px 4px;font-size:12px;color:#e1e7eb;letter-spacing:.03em}@media(max-width:800px){.publishing-note{grid-template-columns:1fr;padding:23px}}
 
 .real-area{margin-top:25px;padding-top:23px;border-top:1px solid #c2cdd3}.real-area h4{font:800 19px Manrope;margin:22px 0 10px}.real-info{background:#e4eaed;padding:14px 16px;color:#4f616c;font-size:12px}.live-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.live-head h4{margin:20px 0 10px}.live-apply{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;margin:20px 0}.live-apply label{grid-column:1/-1;font-size:12px;font-weight:700;margin-bottom:-4px}.live-apply select{min-width:0}.live-apply button{white-space:nowrap}.live-apply button:disabled{opacity:.45;cursor:not-allowed}.live-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #c6d0d5}.live-row strong{font-size:13px}.live-row p{font-size:11px;color:#61727e;margin:2px 0}.live-service{padding:16px;background:#eef2f3;border:1px solid #c9d3d8;margin:9px 0}.live-service h5{font-size:15px;margin:0 0 9px}.live-service p{font-size:12px;color:#61727e;margin:0 0 12px}@media(max-width:620px){.live-apply{grid-template-columns:1fr}.live-apply label{grid-column:auto}.live-apply button{width:100%}}
-</style></head><body>
+.passwordless-card{padding:22px;background:#e6edef;border:1px solid #c5d0d5;margin:0 0 24px}.passwordless-card h4{font:800 20px Manrope;margin:7px 0}.passwordless-card p{font-size:12px;color:#52646e;line-height:1.65}.passwordless-card label{display:block;font-size:12px;font-weight:800;margin:12px 0 7px}.magic-input-row{display:grid;grid-template-columns:1fr auto;gap:8px}.magic-input-row input{min-width:0}.auth-alternative{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#71808b;text-align:center;margin:16px 0}@media(max-width:660px){.magic-input-row{grid-template-columns:1fr}.magic-input-row button{width:100%}}</style></head><body>
 <header><div class="brand">ESTUDIO <span>3.14</span></div><nav aria-label="Secciones"><button onclick="go('inicio')">Inicio</button><button onclick="go('buscar')">Buscar abogado</button><button onclick="go('membresias')">Membresías</button><button onclick="go('panel')">Panel de miembro</button><button onclick="go('avales')">Avales</button><button class="nav-account" onclick="go('cuenta')">Mi cuenta ↗</button></nav></header>
 <main>
 <section id="inicio" class="active">
@@ -204,6 +204,7 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 <div class="auth-layout">
 <div class="auth-card" id="auth-forms">
 <div class="eyebrow">ACCESO A ESTUDIO 3.14</div><h3>Ingresá o registrate</h3>
+<div class="passwordless-card"><div class="eyebrow">ACCESO MÁS FÁCIL</div><h4>Ingresá con un enlace por correo</h4><p>Sin contraseña. Escribí tu correo una sola vez y abrí el enlace que recibas. Si todavía no tenés cuenta, Supabase podrá crearla como perfil pendiente de verificación.</p><form id="magic-form" onsubmit="sendMagicLink(event)"><label for="magic-email">Tu correo electrónico</label><div class="magic-input-row"><input type="email" id="magic-email" required autocomplete="email" placeholder="tu@email.com"><button class="primary" type="submit" id="magic-send">Enviar enlace ↗</button></div></form><p class="small muted" id="magic-message" aria-live="polite">El correo puede tardar unos minutos. No compartas el enlace con otras personas.</p></div><div class="auth-alternative">O también podés ingresar con contraseña</div>
 <div class="auth-tabs"><button type="button" id="tab-login" class="active" onclick="authTab('login')">Ingresar</button><button type="button" id="tab-register" onclick="authTab('register')">Crear cuenta</button></div>
 <form id="auth-form" onsubmit="submitAuth(event)">
 <div id="auth-name-row" class="field" hidden><label for="auth-name">Nombre y apellido</label><input id="auth-name" autocomplete="name" maxlength="120"></div>
@@ -320,6 +321,20 @@ function authTab(mode){
  document.getElementById('auth-name').required=mode==='register';
  document.getElementById('auth-password').setAttribute('autocomplete',mode==='register'?'new-password':'current-password');
  document.getElementById('auth-submit').textContent=mode==='register'?'Solicitar registro ↗':'Ingresar a mi cuenta ↗';
+}
+async function sendMagicLink(event){
+ event.preventDefault();
+ const button=document.getElementById('magic-send'),note=document.getElementById('magic-message');
+ if(!authClient){note.textContent='La conexión de acceso no está disponible en este momento.';return}
+ const email=document.getElementById('magic-email').value.trim();
+ if(!email){note.textContent='Ingresá un correo válido.';return}
+ button.disabled=true;note.textContent='Solicitando enlace de acceso...';
+ try{
+  const {error}=await authClient.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname,shouldCreateUser:true}});
+  if(error)throw error;
+  note.textContent='Si el correo puede recibir mensajes de Estudio 3.14, te llegará un enlace de acceso. Abrilo desde el mismo dispositivo para ingresar.';
+ }catch(err){note.textContent='No se pudo solicitar el enlace: '+authErr(err)}
+ finally{button.disabled=false}
 }
 function authErr(error){return error && error.message ? error.message:'No fue posible completar la solicitud.'}
 async function submitAuth(event){
@@ -457,6 +472,7 @@ if(authReady){
 }else{
  authText('Versión de demostración: el registro real se habilitará cuando Estudio 3.14 conecte su base de datos y servicio de identidad.');
  document.getElementById('auth-submit').disabled=true;
+ document.getElementById('magic-send').disabled=true;
 }
 </script>
 </body></html>

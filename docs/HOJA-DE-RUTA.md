@@ -53,3 +53,12 @@ Se implementan directamente las mejoras técnicas no destructivas que no necesit
 - **Pruebas:** validación de sintaxis JS, confirmación de bucket no público y límites. `anon` no tiene EXECUTE sobre funciones de mensajes y archivos y se verificó denegación de SELECT anónimo para tabla de mensajes.
 - **Advertencia:** falta prueba funcional con dos cuentas reales (abogado y operador), incluyendo permisos de Storage, carga/descarga, verificación de MIME, manejo de errores y políticas de retención. **No subir expedientes jurídicos reales ni información sensible hasta completar esta revisión y la documentación legal.**
 - **Seguridad pendiente:** el analizador Supabase mantiene avisos generales por RPCs `SECURITY DEFINER` ejecutables por usuarios autenticados. Deben revisarse con pruebas de roles antes de apertura comercial.
+
+## CRM privado y seguimiento — entrega
+- Migración `20261023_014_crm_private_pipeline.sql` aplicada; total **14 migraciones**, **15 tablas públicas**, todas con RLS.
+- `crm_opportunities`: alias, área, canal opcional, estado, próxima tarea y fecha; `crm_opportunity_events`: historial de cambios.
+- Los datos pertenecen al abogado verificado; ni una cuenta anónima ni una cuenta de otro abogado pueden consultar oportunidades. El panel administrativo no recibe acceso automático a esos datos.
+- `create_crm_opportunity` y `advance_crm_opportunity` validan en servidor el estado de la cuenta y la propiedad de las oportunidades. Los usuarios no tienen permisos de escritura directa sobre las tablas.
+- `Mi cuenta` incluye altas, avance de etapas, recordatorios por fecha, conteos de oportunidades activas/vencidas e historial; no envía automáticamente correos ni mensajes a potenciales clientes.
+- Seguridad comprobada: `anon` carece de SELECT/EXECUTE sobre el CRM; `authenticated` carece de INSERT directo; RLS evita lecturas sin identidad. Pendiente validar con dos usuarios reales diferentes.
+- Se mantienen advertencias del auditor sobre RPCs `SECURITY DEFINER` accesibles a usuarios autenticados, sujetas a condiciones internas de autorización. Requieren pruebas completas antes del lanzamiento.

@@ -363,7 +363,7 @@ async function sendMagicLink(event){
  if(!email){note.textContent='Ingresá un correo válido.';return}
  button.disabled=true;note.classList.remove('sent');note.textContent='Solicitando enlace de acceso...';
  try{
-  const {error}=await authClient.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname+'?cuenta=1',shouldCreateUser:true}});
+  const {error}=await authClient.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname,shouldCreateUser:true}});
   if(error)throw error;
   note.classList.add('sent');note.textContent='✓ Solicitud enviada. Revisá tu correo y abrí el enlace para entrar a Mi cuenta. Si no lo recibís, mirá también en Spam.';
  }catch(err){note.classList.remove('sent');note.textContent='No se pudo solicitar el enlace: '+authErr(err)}
@@ -381,7 +381,7 @@ async function submitAuth(event){
  authBusy=true;document.getElementById('auth-submit').disabled=true;
  try{
   if(authMode==='register'){
-   const {data,error}=await authClient.auth.signUp({email,password,options:{data:{display_name},emailRedirectTo:location.origin+location.pathname+'?cuenta=1'}});
+   const {data,error}=await authClient.auth.signUp({email,password,options:{data:{display_name},emailRedirectTo:location.origin+location.pathname}});
    if(error)throw error;
    authText(data.session?'Cuenta creada. Tu perfil queda pendiente de verificación.':'Revisá tu correo para confirmar el registro. El acceso profesional requiere validación posterior.');
   }else{
@@ -1021,7 +1021,7 @@ async function resetPassword(){
 if(authReady){
  authClient=window.supabase.createClient(authCfg.url,authCfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
  authText('Servicio de autenticación conectado. Podés ingresar o registrarte.');
- authClient.auth.onAuthStateChange((event)=>{if(event==='SIGNED_IN'||event==='INITIAL_SESSION'){if(new URLSearchParams(location.search).has('cuenta')){go('cuenta');history.replaceState(null,'',location.pathname);}}if(event==='PASSWORD_RECOVERY'){document.getElementById('password-recovery').hidden=false;authText('Elegí tu nueva contraseña y guardala.');}else{setTimeout(()=>displayAccount(),0)}});
+ authClient.auth.onAuthStateChange((event)=>{if(event==='SIGNED_IN'){go('cuenta');}else if(event==='INITIAL_SESSION' && new URLSearchParams(location.search).has('cuenta')){go('cuenta');history.replaceState(null,'',location.pathname);}if(event==='PASSWORD_RECOVERY'){document.getElementById('password-recovery').hidden=false;authText('Elegí tu nueva contraseña y guardala.');}else{setTimeout(()=>displayAccount(),0)}});
  if(new URLSearchParams(location.search).has('cuenta'))go('cuenta');
  displayAccount();
 }else{

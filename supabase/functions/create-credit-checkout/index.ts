@@ -1,0 +1,34 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+const cors={"Access-Control-Allow-Origin":"https://nicolascostasrrhh-prog.github.io","Access-Control-Allow-Headers":"authorization, apikey, content-type","Access-Control-Allow-Methods":"POST, OPTIONS"};
+const json=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers:{...cors,"Content-Type":"application/json"}});
+Deno.serve(async(req)=>{
+ if(req.method==="OPTIONS")return new Response(null,{status:204,headers:cors});
+ if(req.method!=="POST")return json({error:"Método no permitido"},405);
+ const token=Deno.env.get("MERCADOPAGO_ACCESS_TOKEN");
+ const supaUrl=Deno.env.get("SUPABASE_URL");
+ const anonKey=Deno.env.get("SUPABASE_ANON_KEY");
+ const serviceKey=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+ if(!token||!supaUrl||!anonKey||!serviceKey)return json({error:"Mercado Pago aún no está conectado"},503);
+ const bearer=req.headers.get("authorization")||"";
+ if(!bearer.startsWith("Bearer "))return json({error:"Iniciá sesión"},401);
+ const client=createClient(supaUrl,anonKey,{global:{headers:{Authorization:bearer}}});
+ const {data:{user},error:authError}=await client.auth.getUser();
+ if(authError||!user||!user.email_confirmed_at)return json({error:"Sesión no confirmada"},401);
+ let params:{package_id?:string};
+ try{params=await req.json()}catch{return json({error:"Solicitud incorrecta"},400)}
+ if(typeof params.package_id!=="string")return json({error:"Paquete inválido"},400);
+ const admin=createClient(supaUrl,serviceKey);
+ const {data:member}=await admin.from("member_profiles").select("is_verified,active").eq("user_id",user.id).maybeSingle();
+ if(!member?.active||!member.is_verified)return json({error:"Membresía pendiente de verificación"},403);
+ const {data:pack}=await admin.from("credit_packages").select("id,title,credits,price_ars,active").eq("id",params.package_id).maybeSingle();
+ if(!pack?.active||pack.price_ars<=0||pack.credits<=0)return json({error:"Paquete no disponible"},400);
+ const {data:intent,error:intentErr}=await admin.from("credit_checkout_intents").insert({member_id:user.id,package_id:pack.id,expected_amount_ars:pack.price_ars,expected_credits:pack.credits}).select("id").single();
+ if(intentErr)return json({error:"No se pudo preparar la compra"},500);
+ const url=supaUrl+"/functions/v1/mercadopago-credit-webhook";
+ const response=await fetch("https://api.mercadopago.com/checkout/preferences",{method:"POST",headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json","X-Idempotency-Key":intent.id},body:JSON.stringify({items:[{id:pack.id,title:"Créditos Estudio 3.14 — "+pack.title,quantity:1,currency_id:"ARS",unit_price:pack.price_ars}],external_reference:intent.id,notification_url:url,back_urls:{success:"https://nicolascostasrrhh-prog.github.io/estudio314/",failure:"https://nicolascostasrrhh-prog.github.io/estudio314/",pending:"https://nicolascostasrrhh-prog.github.io/estudio314/"},auto_return:"approved"})});
+ if(!response.ok)return json({error:"Mercado Pago no pudo preparar el enlace"},502);
+ const preference=await response.json();
+ if(!preference.id||!/^https:\/\/(www\.)?(mercadopago\.com|mercadopago\.com\.ar)\//.test(preference.init_point||""))return json({error:"Mercado Pago devolvió una respuesta inválida"},502);
+ await admin.from("credit_checkout_intents").update({provider_preference_id:preference.id}).eq("id",intent.id);
+ return json({checkout_url:preference.init_point});
+});

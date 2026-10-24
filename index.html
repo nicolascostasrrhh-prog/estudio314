@@ -132,6 +132,29 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
  .account-tabs button{padding:11px}
  #account-profile{padding:15px}
 }
+
+.credit-shop{padding:22px 0}
+.credit-shop h3{font:800 25px Manrope,Arial,sans-serif;margin:8px 0}
+.credit-shop>p{max-width:760px;line-height:1.7}
+.credit-shop-balance{margin:22px 0;padding:22px 26px;border-radius:12px;background:#344752;color:#fff;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.credit-shop-balance span{font-size:11px;letter-spacing:.09em;font-weight:750;opacity:.8}
+.credit-shop-balance strong{font:800 38px Manrope,Arial,sans-serif;margin-right:auto}
+.credit-shop-balance .outline{color:#fff;border-color:#8fa6b2}
+.credit-pack-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:18px 0 26px}
+.credit-pack{padding:23px;border:1px solid #c4d0d5;border-radius:12px;background:#f3f7f8;display:flex;gap:9px;flex-direction:column;align-items:flex-start}
+.credit-pack span{font-size:9px;letter-spacing:.12em;color:#647982;font-weight:800}
+.credit-pack h4{font:800 20px Manrope,Arial,sans-serif;margin:5px 0}
+.credit-pack strong{font-size:20px;color:#2d4f59}
+.credit-pack p{font-size:16px;margin:7px 0 13px}
+.credit-pack button{width:100%}
+.credit-shop-empty{padding:25px;background:#f4f7f8;border:1px dashed #b2c6d0;border-radius:10px;font-size:13px}
+.credit-purchase-row{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #d0dade;flex-wrap:wrap;font-size:12px}
+.credit-purchase-row small{color:#416a53}
+#account-overview{background:linear-gradient(150deg,#f7fafb 0%,#e9f0f2 100%);padding:22px;border:1px solid #dce5e9;border-radius:12px}
+#account-overview .account-kpis>div{border:1px solid #e1e8eb;background:#fff;box-shadow:0 3px 14px rgba(17,39,50,.04)}
+#account-tab-panels>.account-tab-panel{animation:account-in .18s ease-out}
+@keyframes account-in{from{opacity:.6;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media(max-width:600px){.credit-shop-balance{padding:17px}.credit-shop-balance strong{font-size:30px}}
 </style></head><body>
 <header><div class="brand">ESTUDIO <span>3.14</span></div><nav aria-label="Secciones"><button onclick="go('inicio')">Inicio</button><button onclick="go('buscar')">Buscar abogado</button><button onclick="go('membresias')">Membresías</button><button onclick="go('panel')">Panel de miembro</button><button onclick="go('avales')">Avales</button><button class="nav-account" onclick="go('cuenta')">Mi cuenta ↗</button></nav></header>
 <main>

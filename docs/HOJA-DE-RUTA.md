@@ -132,3 +132,11 @@ Se implementan directamente las mejoras técnicas no destructivas que no necesit
 - Se mantienen las condiciones comerciales pendientes; NO se han fijado precios ni activado cobros de Crecimiento Profesional. Una selección de modalidad en el registro **no equivale a pago confirmado**. Antes de comercializar, definir precios, capacidad operativa y contrato de servicios.
 - Validado: RLS de las nuevas tablas, prohibición de consulta/gestión privada para cuenta común y acceso administrativo, 0 planes/simulaciones guardados. Scripts de interfaz compilan; pendiente recorrido visual en navegador autenticado.
 - Próxima etapa recomendada: reputación de abogados a partir de atenciones verificadas, sin rankings artificiales, y revisión de UX real en móvil.
+
+## Landings informativas completas de membresías (24/10/2026)
+- La vista general de `Membresías` permanece comercial y resumida. Sus botones llevan a **dos páginas internas extensas y separadas**, accesibles por `#plan-acceso` y `#plan-crecimiento`, conservando enlaces directos y navegación de regreso.
+- `plan-acceso`: presentación de comunidad, perfil profesional, marketplace, CRM, cuenta, independencia profesional, reconocimiento institucional; circuito de registro, solicitud de admisión, verificación, resolución y habilitación; alcance, exclusiones, responsabilidades, condiciones no aprobadas y FAQ.
+- `plan-crecimiento`: incluye expresamente **todo el acceso a la plataforma y Comunidad Estudio 3.14**; diagnóstico, planificación, acciones flexibles, seguimiento, reasignación de prioridades, escenarios concretos, ejemplos del panel, condiciones operativas, exclusiones y FAQ. **No es un catálogo de servicios ni una cantidad ilimitada de tareas.**
+- Se diferenciaron claramente funcionalidades implementadas, prestaciones previstas y condiciones comerciales pendientes. No se anunciaron tarifas ni beneficios no aprobados como disponibles; el proceso de registro se ofrece al final de cada página.
+- La trayectoria/categorías institucionales continúan como sección separada de las modalidades comerciales.
+- Validación: ambas secciones y sus enlaces existen; los bloques JS compilan sintácticamente. Falta QA visual y de clics en navegador real, especialmente móvil y deep links tras autenticación.

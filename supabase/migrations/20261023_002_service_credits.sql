@@ -32,7 +32,7 @@ begin
  values(auth.uid(),'reserva',-s.credit_cost,v_id,'Reserva de créditos por pedido',auth.uid());
  end if;
  return v_id;
-end; $;
+end; $$;
 revoke execute on function public.available_credits(uuid),public.request_service(uuid,jsonb) from public,anon;
 grant execute on function public.available_credits(uuid),public.request_service(uuid,jsonb) to authenticated;
 commit;

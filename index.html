@@ -155,7 +155,7 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 #account-tab-panels>.account-tab-panel{animation:account-in .18s ease-out}
 @keyframes account-in{from{opacity:.6;transform:translateY(5px)}to{opacity:1;transform:none}}
 @media(max-width:600px){.credit-shop-balance{padding:17px}.credit-shop-balance strong{font-size:30px}}
-</style></head><body>
+.account-welcome h3{font:800 23px Manrope,Arial,sans-serif;margin:0 0 6px}.account-welcome p{margin:0 0 17px;color:#61747f;font-size:13px}.account-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:18px}.account-shortcut{padding:20px 18px;text-align:left;border:1px solid #d6e0e3;background:#fff;border-radius:11px;display:grid;gap:6px;cursor:pointer;transition:border-color .2s,transform .2s;color:#2b3b45}.account-shortcut:hover{border-color:#7999a7;transform:translateY(-2px)}.account-shortcut strong{font:800 15px Manrope,Arial,sans-serif}.account-shortcut span{font-size:11px;color:#627885}@media(max-width:580px){.account-shortcuts{grid-template-columns:1fr}}</style></head><body>
 <header><div class="brand">ESTUDIO <span>3.14</span></div><nav aria-label="Secciones"><button onclick="go('inicio')">Inicio</button><button onclick="go('buscar')">Buscar abogado</button><button onclick="go('membresias')">Membresías</button><button onclick="go('panel')">Panel de miembro</button><button onclick="go('avales')">Avales</button><button class="nav-account" onclick="go('cuenta')">Mi cuenta ↗</button></nav></header>
 <main>
 <section id="inicio" class="active">
@@ -987,6 +987,24 @@ function createAccountTabs(){
  const subtitle=categories?.nextElementSibling;
  if(categories)overview.appendChild(categories);
  if(subtitle&&subtitle.matches('p'))overview.appendChild(subtitle);
+ const welcome=document.createElement('div');
+ welcome.className='account-welcome';
+ welcome.innerHTML='<h3>Tu espacio de trabajo</h3><p>Encontrá todo lo que necesitás en un solo lugar: servicios, créditos, membresía y clientes.</p>';
+ overview.insertBefore(welcome,overview.firstChild);
+ const shortcuts=document.createElement('div');shortcuts.className='account-shortcuts';
+ for(const [id,label,desc] of [
+  ['trabajo','Mis servicios','Pedidos, avances y entregas'],
+  ['creditos','Comprar créditos','Saldo, paquetes y compras'],
+  ['membresia','Mi membresía','Estado, solicitudes y categorías'],
+  ['contactos','Mi CRM','Contactos y seguimientos']
+ ]){
+  const b=document.createElement('button');b.type='button';b.className='account-shortcut';
+  const strong=document.createElement('strong');strong.textContent=label;
+  const small=document.createElement('span');small.textContent=desc;
+  b.append(strong,small);b.addEventListener('click',()=>showAccountTab(id));
+  shortcuts.appendChild(b);
+ }
+ overview.appendChild(shortcuts);
  sections.set('account-overview',overview);
  const enrollment=document.getElementById('membership-request-form')?.closest('.membership-enrollment');
  if(enrollment){enrollment.id='membership-ui';sections.set('membership-ui',enrollment)}
@@ -1004,7 +1022,7 @@ function createAccountTabs(){
   for(const itemId of items){const el=sections.get(itemId);if(el)panel.appendChild(el)}
   area.appendChild(panel);
  }
- const before=document.getElementById('account-name');
+ const before=document.getElementById('account-email');
  before.insertAdjacentElement('afterend',tabbar);
  tabbar.insertAdjacentElement('afterend',area);
  accountTabsReady=true;

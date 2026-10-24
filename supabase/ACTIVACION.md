@@ -1,26 +1,27 @@
 # Activar cuentas reales — Estudio 3.14
 
 ## Estado actual (octubre 2026)
-La web está en GitHub Pages y muestra **Mi cuenta**. Sin configurar Supabase, los controles reales se mantienen deshabilitados. Los módulos de créditos/avales del prototipo siguen siendo simulaciones locales.
+**Proyecto activo:** `estudio314` (ref `pdefftaresvglcugzqtz`) en organización `Estudio3.14`, región São Paulo. El 23/10/2026 se aplicaron y verificaron las migraciones `estudio314_initial_schema`, `estudio314_service_credits`, `estudio314_signup_profile` y `estudio314_security_hardening`. La web ya tiene `config.js` configurado con URL y clave **publicable**; el módulo Mi cuenta intenta usar autenticación real. Los otros paneles de créditos y avales siguen siendo demostraciones locales.
 
 ## Conexión paso a paso (solo propietario)
 
-1. Abrí [Supabase](https://supabase.com/dashboard) y creá un proyecto bajo tu cuenta o tu organización. Elegí una contraseña de base de datos fuerte; **no la subas a GitHub ni la pegues en conversaciones**.
-2. En Supabase, abrí **SQL Editor** y ejecutá, en orden, el contenido de estos archivos del repositorio:
+1. **Completado:** proyecto Supabase creado bajo la organización Estudio3.14. Nunca subas contraseñas o secretos a GitHub.
+2. **Completado:** migraciones ejecutadas y registradas, en orden:
    - `supabase/migrations/20261023_001_initial.sql`
    - `supabase/migrations/20261023_002_service_credits.sql`
    - `supabase/migrations/20261023_003_signup_profile.sql`
-   **Advertencia:** son migraciones nuevas, sin pruebas de integración ejecutadas. Validalas primero en un proyecto de ensayo. No ejecutar sin revisar el resultado de cada paso.
+   - `supabase/migrations/20261023_004_security_hardening.sql`
+   **Verificado:** 8 tablas públicas, RLS activo en las 8, 7 políticas y un trigger de creación de perfiles. No se hicieron pruebas de registro completo por correo.
 3. En **Authentication → Providers → Email**, configurá el correo/contraseña y verificaciones requeridas.
 4. En **Authentication → URL Configuration**, configurá la URL principal:
    `https://nicolascostasrrhh-prog.github.io/estudio314/`
    y agregá esa misma dirección a las URLs de redirección admitidas.
-5. En Supabase → **Project Settings → API Keys** (la ubicación exacta puede variar), copiá solamente:
+5. **Completado:** URL del proyecto y clave publicable recuperadas por la conexión autorizada. Si revisás las claves en Supabase → Project Settings → API Keys, solo la publicable puede incluirse en el frontend:
    - Project URL (`https://...supabase.co`)
    - **Publishable key** (`sb_publishable_...`) o **anon/public key** si tu proyecto la utiliza.
    **Nunca copiar la secret key, service_role ni credenciales privadas.**
-6. En GitHub → **nicolascostasrrhh-prog/estudio314 → config.js → Edit**, completá los campos `url` y `publishableKey`. Son datos diseñados para ser públicos; su seguridad depende de RLS.
-7. GitHub Pages republica automáticamente el cambio. Probá **Mi cuenta → Crear cuenta** con un correo tuyo de ensayo, verificá email e ingresá.
+6. **Completado:** GitHub → nicolascostasrrhh-prog/estudio314 → `config.js` configurado automáticamente. RLS y restricciones de permisos instaladas.
+7. **Pendiente:** configurá primero la URL de autenticación del paso 4. Después GitHub Pages mostrará **Mi cuenta** conectada y podrás probar **Mi cuenta → Crear cuenta** con un correo de ensayo, verificarlo e ingresar.
 8. Comprobá en Supabase que el usuario existe en **Authentication → Users** y que su perfil aparece en `public.member_profiles` con `is_verified=false`, categoría `asociado` y sin créditos asignados.
 9. Habilitá la cuenta profesional y sus beneficios solamente tras completar el proceso de verificación y revisión de seguridad.
 
@@ -44,3 +45,11 @@ La web está en GitHub Pages y muestra **Mi cuenta**. Sin configurar Supabase, l
 - **Titular → Distinguido:** desde 24 meses de permanencia total + 2 avales Originarios + resolución.
 - Círculo Originario es condición fundacional distinta de la progresión regular.
 - Los descuentos y las asignaciones de créditos deben fijarse en un cuadro económico aprobado, no están automatizados todavía.
+
+## Auditoría efectuada en Supabase
+
+- Fecha 23/10/2026: 8 tablas, 4 migraciones, RLS habilitado en todas las tablas.
+- Se verificó que `anon` no puede ejecutar el trigger de registro ni hacer TRUNCATE de perfiles. Tampoco el rol `authenticated` puede truncar créditos.
+- La auditoría aún informa advertencias sobre funciones `SECURITY DEFINER` autenticadas: son puntos controlados por validaciones de identidad y categoría, pero **requieren pruebas de autorización de extremo a extremo antes de abrir al público**.
+- `platform_admins` no tiene política de lectura por diseño: ni usuarios normales ni clientes públicos pueden listar administradores.
+- No se han asignado permisos administrativos ni créditos reales a ningún usuario.

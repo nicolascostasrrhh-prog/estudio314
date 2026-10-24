@@ -692,6 +692,46 @@ async function saveMyDirectory(event){
  finally{realBusy=false;button.disabled=false}
 }
 
+
+let workOrderId=null,workAdmin=false;
+function workStatus(msg){document.getElementById('work-status').textContent=msg}
+function closeWorkOrder(){workOrderId=null;document.getElementById('order-workspace').hidden=true}
+async function openWorkOrder(id){
+ if(!authClient||!liveUser)return;
+ const {data:order,error}=await authClient.from('service_orders').select('id,member_id,status').eq('id',id).maybeSingle();
+ if(error||!order){authText('No tenés acceso al pedido.');return}
+ const access=await authClient.rpc('is_platform_admin',{p_user:liveUser.id});
+ workAdmin=!access.error&&access.data===true;
+ if(!workAdmin&&order.member_id!==liveUser.id){authText('Acceso no autorizado.');return}
+ workOrderId=id;
+ const el=document.getElementById('order-workspace');el.hidden=false;
+ document.getElementById('work-order-label').textContent='Pedido '+id.slice(0,8)+' · '+liveStatus(order.status);
+ document.getElementById('work-kind').innerHTML=workAdmin?
+ '<option value="respuesta">Respuesta</option><option value="entrega">Entrega</option><option value="consulta">Consulta</option>':
+ '<option value="consulta">Consulta</option><option value="ajuste">Solicitar ajuste</option>';
+ workStatus('Espacio privado habilitado.');
+ el.scrollIntoView({behavior:'smooth',block:'start'});
+ await Promise.all([refreshWorkMessages(),refreshWorkFiles()]);
+}
+async function refreshWorkMessages(){
+ const id=workOrderId;if(!id)return;
+ const {data,error}=await authClient.from('service_order_messages')
+ .select('sender_id,message_kind,body,created_at').eq('order_id',id).order('created_at').limit(100);
+ if(id!==workOrderId)return;
+ const el=document.getElementById('work-messages');
+ if(error){el.textContent='Error: '+error.message;return}
+ el.innerHTML=data.length?data.map(m=>'<div class="timeline-event"><b>'+escapeHTML(m.message_kind)+'</b> · '+escapeHTML(new Date(m.created_at).toLocaleString('es-AR'))+'<p>'+escapeHTML(m.body)+'</p></div>').join(''):'<p class="small muted">Sin mensajes todavía.</p>';
+}
+async function sendWorkMessage(event){
+ event.preventDefault();if(!workOrderId||!authClient)return;
+ const kind=document.getElementById('work-kind').value,body=document.getElementById('work-body').value.trim();
+ if(body.length<5)return;
+ const {error}=await authClient.rpc('add_order_message',{p_order:workOrderId,p_kind:kind,p_body:body});
+ if(error){workStatus('No se pudo enviar: '+error.message);return}
+ document.getElementById('work-body').value='';
+ workStatus('Mensaje enviado.');await refreshWorkMessages();
+}
+
 async function signOutAccount(){
  if(!authClient)return;const {error}=await authClient.auth.signOut();
  if(error){authText('No pudimos cerrar la sesión: '+authErr(error));return}

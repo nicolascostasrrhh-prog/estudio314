@@ -155,7 +155,7 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 #account-tab-panels>.account-tab-panel{animation:account-in .18s ease-out}
 @keyframes account-in{from{opacity:.6;transform:translateY(5px)}to{opacity:1;transform:none}}
 @media(max-width:600px){.credit-shop-balance{padding:17px}.credit-shop-balance strong{font-size:30px}}
-.account-welcome h3{font:800 23px Manrope,Arial,sans-serif;margin:0 0 6px}.account-welcome p{margin:0 0 17px;color:#61747f;font-size:13px}.account-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:18px}.account-shortcut{padding:20px 18px;text-align:left;border:1px solid #d6e0e3;background:#fff;border-radius:11px;display:grid;gap:6px;cursor:pointer;transition:border-color .2s,transform .2s;color:#2b3b45}.account-shortcut:hover{border-color:#7999a7;transform:translateY(-2px)}.account-shortcut strong{font:800 15px Manrope,Arial,sans-serif}.account-shortcut span{font-size:11px;color:#627885}@media(max-width:580px){.account-shortcuts{grid-template-columns:1fr}}.admin-inner-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 16px;padding:9px;background:#293b46;border:1px solid #526c7a;border-radius:10px}.admin-inner-tabs button{flex:1;min-width:140px;padding:12px 11px;color:#bdced7;background:transparent;border:1px solid transparent;border-radius:7px;cursor:pointer;font:800 12px Manrope,Arial,sans-serif}.admin-inner-tabs button.is-active{background:#e9f1f3;color:#304653}.admin-view[hidden]{display:none!important}.admin-view{padding:2px}.admin-view>.admin-command-pane{margin:0}.admin-view>.membership-enrollment{background:#eef3f5;color:#293e49;border-radius:8px;margin-top:16px;padding:18px}.admin-view .admin-command-grid{grid-template-columns:1fr 1fr}@media(max-width:760px){.admin-inner-tabs button{min-width:calc(50% - 8px)}.admin-view .admin-command-grid{grid-template-columns:1fr}}</style></head><body>
+.account-welcome h3{font:800 23px Manrope,Arial,sans-serif;margin:0 0 6px}.account-welcome p{margin:0 0 17px;color:#61747f;font-size:13px}.account-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:18px}.account-shortcut{padding:20px 18px;text-align:left;border:1px solid #d6e0e3;background:#fff;border-radius:11px;display:grid;gap:6px;cursor:pointer;transition:border-color .2s,transform .2s;color:#2b3b45}.account-shortcut:hover{border-color:#7999a7;transform:translateY(-2px)}.account-shortcut strong{font:800 15px Manrope,Arial,sans-serif}.account-shortcut span{font-size:11px;color:#627885}@media(max-width:580px){.account-shortcuts{grid-template-columns:1fr}}.admin-inner-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 16px;padding:9px;background:#293b46;border:1px solid #526c7a;border-radius:10px}.admin-inner-tabs button{flex:1;min-width:140px;padding:12px 11px;color:#bdced7;background:transparent;border:1px solid transparent;border-radius:7px;cursor:pointer;font:800 12px Manrope,Arial,sans-serif}.admin-inner-tabs button.is-active{background:#e9f1f3;color:#304653}.admin-view[hidden]{display:none!important}.admin-view{padding:2px}.admin-view>.admin-command-pane{margin:0}.admin-view>.membership-enrollment{background:#eef3f5;color:#293e49;border-radius:8px;margin-top:16px;padding:18px}.admin-view .admin-command-grid{grid-template-columns:1fr 1fr}@media(max-width:760px){.admin-inner-tabs button{min-width:calc(50% - 8px)}.admin-view .admin-command-grid{grid-template-columns:1fr}}.account-next-action{display:flex;justify-content:space-between;gap:24px;align-items:center;margin-top:19px;padding:23px 24px;background:#334955;color:#fff;border-radius:12px}.account-next-action .account-action-eyebrow{font-size:10px;letter-spacing:.11em;color:#bdd1dc;font-weight:800}.account-next-action h4{font:800 22px Manrope,Arial,sans-serif;margin:5px 0}.account-next-action p{font-size:12px;color:#cbd7dd;max-width:450px;margin:0}.account-next-action button{flex-shrink:0}@media(max-width:680px){.account-next-action{display:block;padding:18px}.account-next-action button{margin-top:16px;width:100%}}</style></head><body>
 <header><div class="brand">ESTUDIO <span>3.14</span></div><nav aria-label="Secciones"><button onclick="go('inicio')">Inicio</button><button onclick="go('buscar')">Buscar abogado</button><button onclick="go('membresias')">Membresías</button><button onclick="go('panel')">Panel de miembro</button><button onclick="go('avales')">Avales</button><button class="nav-account" onclick="go('cuenta')">Mi cuenta ↗</button></nav></header>
 <main>
 <section id="inicio" class="active">
@@ -440,6 +440,7 @@ async function displayAccount(){
  await loadMyDirectory();
  await loadCrm();
  await refreshCreditShop();
+ updateAccountHome();
  if(accountTabsReady)showAccountTab(document.querySelector('.account-tab.is-active')?.dataset.accountTab||'inicio');
 }
 
@@ -1008,7 +1009,7 @@ function createAccountTabs(){
  sections.set('account-overview',overview);
  const enrollment=document.getElementById('membership-request-form')?.closest('.membership-enrollment');
  if(enrollment){enrollment.id='membership-ui';sections.set('membership-ui',enrollment)}
- for(const id of ['originario-workspace','service-brief','order-workspace','member-live-area','lawyer-crm','directory-editor','admin-command','member-admin','promotion-admin-workspace']){
+ for(const id of ['originario-workspace','service-brief','order-workspace','member-live-area','credit-shop','lawyer-crm','directory-editor','admin-command','member-admin','promotion-admin-workspace']){
   const el=document.getElementById(id);if(el)sections.set(id,el);
  }
  const tabbar=document.createElement('nav');tabbar.className='account-tabs';tabbar.setAttribute('aria-label','Secciones de Mi cuenta');
@@ -1042,6 +1043,23 @@ function showAccountTab(id){
  document.querySelectorAll('.account-tab-panel').forEach(el=>{el.hidden=el.id!=='account-tab-'+id});
 }
 
+
+
+function updateAccountHome(){
+ const summary=document.getElementById('account-overview');
+ if(!summary||!liveUser)return;
+ let banner=document.getElementById('account-next-action');
+ if(!banner){banner=document.createElement('div');banner.id='account-next-action';banner.className='account-next-action';summary.insertBefore(banner,summary.querySelector('.account-shortcuts'))}
+ const isAdmin=!document.getElementById('admin-command').hidden;
+ if(isAdmin){
+  banner.innerHTML='<div><span class="account-action-eyebrow">TU PRIORIDAD</span><h4>Gestioná la plataforma</h4><p>Consultá solicitudes, miembros y servicios desde un único centro operativo.</p></div><button type="button" class="primary" onclick="showAccountTab(\'administracion\')">Abrir administración ↗</button>';
+ }else if(!liveProfile?.is_verified){
+  banner.innerHTML='<div><span class="account-action-eyebrow">PRIMER PASO</span><h4>Completá tu admisión</h4><p>Registrá los datos profesionales para solicitar la revisión de tu membresía. No hay cobros en este paso.</p></div><button type="button" class="primary" onclick="showAccountTab(\'membresia\')">Ir a membresía ↗</button>';
+ }else{
+  banner.innerHTML='<div><span class="account-action-eyebrow">TU ESTUDIO EN MARCHA</span><h4>Organizá tus próximos trabajos</h4><p>Revisá pedidos, consultá tu saldo y gestioná tus servicios desde el panel.</p></div><button type="button" class="primary" onclick="showAccountTab(\'trabajo\')">Ver mis servicios ↗</button>';
+ }
+ const crm=document.querySelector('.account-shortcut');if(crm)crm.closest('.account-shortcuts').hidden=false;
+}
 
 async function refreshCreditShop(){
  const holder=document.getElementById('credit-shop');

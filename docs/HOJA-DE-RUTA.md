@@ -62,3 +62,12 @@ Se implementan directamente las mejoras técnicas no destructivas que no necesit
 - `Mi cuenta` incluye altas, avance de etapas, recordatorios por fecha, conteos de oportunidades activas/vencidas e historial; no envía automáticamente correos ni mensajes a potenciales clientes.
 - Seguridad comprobada: `anon` carece de SELECT/EXECUTE sobre el CRM; `authenticated` carece de INSERT directo; RLS evita lecturas sin identidad. Pendiente validar con dos usuarios reales diferentes.
 - Se mantienen advertencias del auditor sobre RPCs `SECURITY DEFINER` accesibles a usuarios autenticados, sujetas a condiciones internas de autorización. Requieren pruebas completas antes del lanzamiento.
+
+## Bloque ejecutado: recordatorios CRM y métricas operativas
+- Migración `20261023_015_crm_reminders.sql` aplicada en Supabase. Se agrega `my_crm_digest()` como función **SECURITY INVOKER** con RLS y datos exclusivamente de `auth.uid()`, más índice parcial de vencimientos.
+- En `Mi cuenta`, el CRM ahora muestra recordatorios vencidos, para hoy y próximos siete días, calculados sobre el total de oportunidades del abogado; una lista priorizada ofrece hasta 12 eventos.
+- Exportación CSV voluntaria de **hasta 1.000** oportunidades del titular, con escapado de fórmulas para hojas de cálculo. El usuario debe custodiar el archivo descargado.
+- El Centro de Administración presenta admisiones, ascensos y pedidos abiertos con más de siete días, además del total histórico de pedidos entregados. No accede a los CRM privados de los abogados.
+- **No hay envío proactivo de correos/WhatsApp**: recordatorios in-app al abrir o actualizar el panel, evitando envíos sin consentimiento y dependencias externas.
+- Verificaciones: 15 tablas públicas con RLS; una sesión autenticada sin identidad ve 0 filas de CRM; `anon` sin `EXECUTE` de `my_crm_digest()` y sin SELECT al CRM; `authenticated` sin UPDATE directo; scripts JavaScript sin errores de sintaxis.
+- **Pendientes importantes:** alta de la primera cuenta administradora por vía segura; pruebas de navegación, registro y permisos entre dos cuentas reales; auditoría de todas las funciones `SECURITY DEFINER`; privacidad/consentimientos antes de datos jurídicos sensibles; ajustar día de corte a zona horaria comercial formal si se automatizan avisos.

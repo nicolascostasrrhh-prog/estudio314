@@ -1130,6 +1130,7 @@ async function displayAccount(){
  await loadCrm();
  await loadClientInquiries();
  await loadNotificationPreferences();
+ setupInquiryAutoRefresh();
  await loadTalentLawyer();
  await refreshCreditShop();
  updateAccountHome();
@@ -1599,7 +1600,7 @@ async function openClientInquiryChat(inquiryId){
  const list=document.getElementById('client-chat-list'),form=document.getElementById('client-chat-form'),feedback=document.getElementById('client-chat-feedback');
  feedback.textContent='';
  const refresh=async()=>{const {data,error}=await authClient.from('client_inquiry_messages').select('sender_id,body,created_at').eq('inquiry_id',inquiryId).order('created_at',{ascending:true}).limit(100);list.replaceChildren();if(error){list.textContent='No se pudo cargar: '+error.message;return}if(!data?.length)list.textContent='Aún no hay respuestas.';for(const msg of data||[]){const row=document.createElement('div');row.className='talent-message';const {data:{user}}=await authClient.auth.getUser();row.classList.toggle('mine',msg.sender_id===user?.id);const meta=document.createElement('small');meta.textContent=(msg.sender_id===user?.id?'Vos':'Otra parte')+' · '+new Date(msg.created_at).toLocaleString('es-AR');const body=document.createElement('p');body.textContent=msg.body;row.append(meta,body);list.append(row)}};
- form.onsubmit=async event=>{event.preventDefault();const {data:{user}}=await authClient.auth.getUser();if(!user)return;const button=form.querySelector('button[type="submit"]');button.disabled=true;const {error}=await authClient.from('client_inquiry_messages').insert({inquiry_id:inquiryId,sender_id:user.id,body:document.getElementById('client-chat-body').value.trim()});feedback.textContent=error?'No se pudo enviar: '+error.message:'Mensaje enviado.';if(!error){form.reset();await refresh()}button.disabled=false;};
+ form.onsubmit=async event=>{event.preventDefault();const {data:{user}}=await authClient.auth.getUser();if(!user)return;const button=form.querySelector('button[type="submit"]');button.disabled=true;const {error}=await authClient.from('client_inquiry_messages').insert({inquiry_id:inquiryId,sender_id:user.id,body:document.getElementById('client-chat-body').value.trim()});feedback.textContent=error?'No se pudo enviar: '+error.message:'Mensaje enviado.';if(!error){form.reset();await refresh();await loadClientInquiries()}button.disabled=false;};
  dialog.showModal();await refresh();
  const {data:{user}}=await authClient.auth.getUser();if(user){await authClient.from('client_inquiry_reads').upsert({inquiry_id:inquiryId,user_id:user.id,last_read_at:new Date().toISOString()},{onConflict:'inquiry_id,user_id'});await loadClientInquiries()}
 }
@@ -1621,6 +1622,12 @@ async function saveNotificationPreferences(event){
  document.getElementById('notification-pref-feedback').textContent=error?'Error: '+error.message:'Preferencia guardada. Los avisos externos aún no están habilitados.';
 }
 
+let inquiryRefreshTimer=null;
+function setupInquiryAutoRefresh(){
+ if(inquiryRefreshTimer)return;
+ inquiryRefreshTimer=setInterval(()=>{if(!document.hidden&&liveUser&&authClient)loadClientInquiries().catch(()=>{});},60000);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&liveUser&&authClient)loadClientInquiries().catch(()=>{});});
+}
 async function loadClientInquiries(){
  if(!authClient||!liveUser)return;
  const mine=document.getElementById('my-client-inquiries'),inbox=document.getElementById('lawyer-inquiry-inbox');

@@ -552,7 +552,7 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 
 /* Integrated final homepage section: one conclusion, two audiences, two actions */
 .home-final{background:linear-gradient(130deg,#242b30,#333940);color:#fff;margin:80px -32px -100px;padding:75px clamp(24px,6vw,100px);position:relative;overflow:hidden}.home-final:after{content:'3.14';font:normal 200px Georgia,serif;color:#ffffff05;position:absolute;right:0;bottom:0;pointer-events:none}.home-final-head{position:relative;z-index:1;max-width:820px;margin:0 auto 48px;text-align:center}.home-final-head>span{font-size:10px;letter-spacing:.19em;color:#d8a58f;font-weight:800}.home-final-head h2{font:normal clamp(38px,5vw,65px) Georgia,serif;line-height:1.1;margin:16px 0;color:#fff}.home-final-head p{color:#c6ced3;font-size:15px;line-height:1.75}.home-final-paths{display:grid;grid-template-columns:1fr 1fr;max-width:1120px;margin:auto;position:relative;z-index:1;border-top:1px solid #87929a66;border-bottom:1px solid #87929a66}.home-final-paths article{padding:36px 45px 35px 0}.home-final-paths article+article{border-left:1px solid #87929a66;padding:36px 0 35px 45px}.home-final-number{font-size:10px;font-weight:800;letter-spacing:.18em;color:#d8aa95}.home-final-paths h3{font:normal clamp(25px,3vw,36px) Georgia,serif;margin:20px 0 14px;color:#f9fafb}.home-final-paths p{color:#cbd4d8;font-size:13px;line-height:1.8;max-width:450px}.home-final-note{font-size:10px;color:#d8aa95;letter-spacing:.04em;margin-top:25px}.home-final-actions{position:relative;z-index:1;display:flex;gap:18px;justify-content:center;align-items:center;margin-top:35px;flex-wrap:wrap}.home-final-actions button{border-radius:7px;padding:15px 24px;font-size:11px;font-weight:800;letter-spacing:.05em}.home-final-actions .primary{background:#d4a189;border:1px solid #d4a189;color:#202a30}.home-final-actions .outline{background:transparent;border:1px solid #9ca8af;color:#f1f3f4}@media(max-width:700px){.home-final{margin:55px -18px -70px;padding:53px 23px}.home-final-paths{grid-template-columns:1fr}.home-final-paths article,.home-final-paths article+article{border-left:0;padding:26px 0}.home-final-paths article+article{border-top:1px solid #87929a66}.home-final-actions{align-items:stretch}.home-final-actions button{width:100%}}
-.member-config{margin:24px 0;padding:23px;background:#f0f1f1;border-left:3px solid #b87b60}.member-config h4{margin:0 0 10px}.member-config label{display:flex;align-items:center;gap:11px;text-transform:none;letter-spacing:0;font-size:13px;margin:12px 0}.member-config input{width:19px;height:19px;accent-color:#b87b60}.member-config[hidden]{display:none}</style></head><body>
+.member-config{margin:24px 0;padding:23px;background:#f0f1f1;border-left:3px solid #b87b60}.member-config h4{margin:0 0 10px}.member-config label{display:flex;align-items:center;gap:11px;text-transform:none;letter-spacing:0;font-size:13px;margin:12px 0}.member-config input{width:19px;height:19px;accent-color:#b87b60}.member-config[hidden]{display:none}.member-config-summary{background:#26333c;color:#f6f7f8;padding:25px;border-radius:9px;margin:22px 0}.member-summary-heading{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.member-summary-heading span{font-size:10px;letter-spacing:.14em;color:#d3a188}.member-summary-heading strong{font-size:13px}.member-config-summary p{font-size:13px;color:#cbd3d8}.member-summary-tags{font-size:13px;font-weight:700;color:#e6bba5;margin:17px 0}.member-config-summary small{font-size:10px;color:#b8c5ce}.member-config-summary[hidden]{display:none}</style></head><body>
 <header><div class="brand">ESTUDIO <span>3.14</span></div><nav aria-label="Secciones"><button onclick="go('inicio')">Inicio</button><button onclick="go('buscar')">Buscar abogado</button><button onclick="go('membresias')">Membresías</button><button onclick="go('formacion')">Estudiantes</button><button class="nav-account" onclick="go('cuenta')">Mi cuenta </button></nav></header>
 <main>
 <section id="inicio" class="active">
@@ -1192,20 +1192,31 @@ async function loadMembership(){
  if(error){status.textContent='No se pudo consultar la admisión: '+error.message;form.hidden=true;return}
  const pending=data.some(x=>x.status==='pendiente');
  form.hidden=pending||Boolean(liveProfile?.is_verified);
- if(liveProfile?.is_verified)status.textContent='Membresía validada · '+(liveProfile.subscription==='integral'?'Crecimiento Profesional':'Solo Plataforma')+'. Los precios y créditos aún no están habilitados.';
+ if(liveProfile?.is_verified)status.textContent='Membresía validada · '+(liveProfile.subscription==='integral'?'Crecimiento Profesional':'Solo Plataforma')+'. Los precios y pagos aún no están habilitados.';
  else if(!data.length)status.textContent='No tenés solicitudes. Completá los datos para solicitar evaluación.';
  else status.innerHTML=data.map(x=>'<div class="live-row"><div><strong>'+escapeHTML(x.status.toUpperCase())+'</strong><p>'+escapeHTML(x.province)+' · '+escapeHTML(x.requested_mode)+' · '+escapeHTML(new Date(x.submitted_at).toLocaleDateString('es-AR'))+'</p>'+(x.review_reason?'<p>'+escapeHTML(x.review_reason)+'</p>':'')+'</div></div>').join('');
  await loadAdminMembership();
 }
 
 function refreshMembershipConfiguration(){const mode=document.getElementById('member-mode')?.value;const box=document.getElementById('member-config');if(box)box.hidden=mode!=='integral';}
-async function loadMembershipConfiguration(){refreshMembershipConfiguration();if(!authClient||!liveUser)return;const {data,error}=await authClient.from('membership_configurations').select('include_content,include_ads,include_optimization,status').eq('user_id',liveUser.id).maybeSingle();if(error)return;for(const [id,key] of [['cfg-content','include_content'],['cfg-ads','include_ads'],['cfg-optimization','include_optimization']]){let input=document.getElementById(id);if(input&&data)input.checked=Boolean(data[key]);}document.getElementById('cfg-status').textContent=data?.status==='presentada'?'Configuración presentada para evaluación. No hay pagos habilitados.':'Seleccioná tus necesidades. Se enviarán junto con tu solicitud.';}
+async function loadMembershipConfiguration(){
+ refreshMembershipConfiguration();
+ if(!authClient||!liveUser)return;
+ const {data,error}=await authClient.from('membership_configurations').select('include_content,include_ads,include_optimization,status').eq('user_id',liveUser.id).maybeSingle();
+ const note=document.getElementById('cfg-status'),summary=document.getElementById('membership-config-summary');
+ if(error){if(note)note.textContent='No fue posible consultar tu selección de servicios.';return}
+ for(const [id,key] of [['cfg-content','include_content'],['cfg-ads','include_ads'],['cfg-optimization','include_optimization']]){
+  const input=document.getElementById(id);if(input&&data)input.checked=Boolean(data[key]);
+ }
+ if(note)note.textContent=data?.status==='presentada'?'Configuración presentada para evaluación. No hay pagos habilitados.':'Seleccioná tus necesidades. Se enviarán junto con tu solicitud.';
+ if(summary){summary.hidden=!data;if(data){const tags=[data.include_content?'Contenidos':null,data.include_ads?'Meta Ads y captación':null,data.include_optimization?'Optimización':null].filter(Boolean);document.getElementById('member-config-summary-title').textContent=data.status==='presentada'?'Solicitud presentada':'Borrador de configuración';document.getElementById('member-config-summary-description').textContent=data.status==='presentada'?'Estas son las áreas solicitadas para tu estudio.':'Tu selección aún no fue presentada.';document.getElementById('member-config-summary-tags').textContent=tags.join(' · ')||'Solo base tecnológica y diagnóstico';}}
+}
 async function saveMembershipConfiguration(submit){
  if(!authClient||!liveUser)return false;
  const payload={user_id:liveUser.id,requested_mode:'integral',include_content:document.getElementById('cfg-content').checked,include_ads:document.getElementById('cfg-ads').checked,include_optimization:document.getElementById('cfg-optimization').checked,updated_at:new Date().toISOString()};
  const {data:existing,error:lookupError}=await authClient.from('membership_configurations').select('status').eq('user_id',liveUser.id).maybeSingle();
  if(lookupError)throw lookupError;
- if(existing?.status==='presentada')return true;
+ if(existing?.status==='presentada')throw new Error('Ya existe una configuración presentada. Contactá a administración para modificarla.');
  const {error:saveError}=existing?await authClient.from('membership_configurations').update({...payload,status:'borrador'}).eq('user_id',liveUser.id):await authClient.from('membership_configurations').insert({...payload,status:'borrador'});
  if(saveError)throw saveError;
  if(submit){
@@ -1222,9 +1233,13 @@ async function submitMembership(ev){
  if(!confirm('¿Enviar solicitud de membresía para evaluación? No se realizará un cobro.'))return;
  realBusy=true;document.getElementById('membership-send').disabled=true;
  try{
+ const integral=document.getElementById('member-mode').value==='integral';
+ if(integral)await saveMembershipConfiguration(false);
  const {error}=await authClient.rpc('submit_membership_request',{p_mode:document.getElementById('member-mode').value,p_province:document.getElementById('member-province').value.trim(),p_license:document.getElementById('member-license').value.trim(),p_bar:document.getElementById('member-bar').value.trim()});
  if(error)throw error;
- if(document.getElementById('member-mode').value==='integral'){try{await saveMembershipConfiguration(true)}catch(configError){authText('La admisión se recibió, pero no se pudo guardar tu selección de servicios: '+authErr(configError));await loadMembership();return;}}authText('Solicitud recibida. Está pendiente de revisión profesional.');await loadMembership();await loadMembershipConfiguration();
+ if(integral){try{await saveMembershipConfiguration(true)}catch(configError){authText('Admisión recibida, pero no pudimos finalizar el registro de los módulos. Contactá administración: '+authErr(configError));await loadMembership();return;}}
+ authText('Solicitud de admisión presentada. Tu matrícula y la configuración requieren revisión administrativa; no se realizó ningún cobro.');
+ await loadMembership();await loadMembershipConfiguration();
  }catch(e){authText('No se pudo registrar tu solicitud: '+authErr(e))}
  finally{realBusy=false;document.getElementById('membership-send').disabled=false}
 }
@@ -1789,6 +1804,7 @@ function createAccountTabs(){
   shortcuts.appendChild(b);
  }
  overview.appendChild(shortcuts);
+ overview.insertAdjacentHTML('beforeend',"<div id=\"membership-config-summary\" class=\"member-config-summary\" hidden><div class=\"member-summary-heading\"><span>MI MEMBRESÍA · CONFIGURACIÓN</span><strong id=\"member-config-summary-title\">En evaluación</strong></div><p id=\"member-config-summary-description\">Tu selección de servicios se mostrará aquí cuando esté registrada.</p><div id=\"member-config-summary-tags\" class=\"member-summary-tags\"></div><small>Las prestaciones están sujetas a verificación, aprobación y alcance acordado. No hay tarifas ni cobros habilitados.</small></div>");
  const graph=document.createElement('div');graph.id='premium-analytics';graph.className='premium-analytics';graph.innerHTML='<div class="premium-data-card"><div class="premium-card-title"><div><span>ACTIVIDAD EN LA PLATAFORMA</span><h4>Movimiento de las últimas 8 semanas</h4></div><small>Datos reales · Supabase</small></div><div id="premium-chart" class="premium-chart" role="img" aria-label="Gráfico de actividad semanal">Consultando información...</div></div><div class="premium-data-card"><div class="premium-card-title"><div><span>ESTADO OPERATIVO</span><h4>Resumen de actividad</h4></div></div><div id="premium-activity" class="premium-activity">Consultando información...</div></div>';
  overview.appendChild(graph);
  sections.set('account-overview',overview);

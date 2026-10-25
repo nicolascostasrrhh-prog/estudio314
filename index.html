@@ -1088,14 +1088,18 @@ async function loadTalentLawyer(){
  const allowed=Boolean(liveProfile?.is_verified&&liveProfile?.active!==false&&liveProfile?.category!=='formacion');
  root.hidden=!allowed;if(!allowed)return;
  const [jobs,profiles]=await Promise.all([authClient.from('talent_opportunities').select('id,title,province,status,created_at').eq('lawyer_id',liveUser.id).order('created_at',{ascending:false}).limit(50),authClient.from('talent_student_profiles').select('user_id,province,city,interests,headline').eq('visible',true).limit(60)]);
+ const ids=(jobs.data||[]).map(x=>x.id);
+ const appResult=ids.length?await authClient.from('talent_applications').select('id,opportunity_id,student_id,message,status').in('opportunity_id',ids).limit(500):{data:[],error:null};
+ const grouped=new Map();for(const application of appResult.data||[]){const arr=grouped.get(application.opportunity_id)||[];arr.push(application);grouped.set(application.opportunity_id,arr)}
  const container=document.getElementById('talent-lawyer-openings');container.replaceChildren();
  for(const job of jobs.data||[]){const card=document.createElement('article');card.className='talent-item';const head=document.createElement('h4');head.textContent=job.title+' · '+job.status;card.append(head);
- const {data:applicants}=await authClient.from('talent_applications').select('id,student_id,message,status').eq('opportunity_id',job.id).limit(100);
+ const applicants=grouped.get(job.id)||[];
  for(const a of applicants||[]){const p=document.createElement('p');p.textContent='Postulación '+a.id.slice(0,8)+' · '+a.status+' · '+a.message;card.append(p);const select=document.createElement('select');for(const value of ['enviada','en_revision','entrevista','cerrada']){const option=document.createElement('option');option.value=value;option.textContent=value;select.append(option)}select.value=a.status;const button=document.createElement('button');button.type='button';button.className='outline';button.textContent='Actualizar';button.onclick=async()=>{const {error}=await authClient.from('talent_applications').update({status:select.value}).eq('id',a.id);document.getElementById('talent-lawyer-status').textContent=error?error.message:'Postulación actualizada'};card.append(select,button,talentConversationButton(a.id))}
  const close=document.createElement('button');close.type='button';close.className='outline';close.textContent='Cerrar oportunidad';close.disabled=job.status==='cerrada';close.onclick=async()=>{const {error}=await authClient.from('talent_opportunities').update({status:'cerrada'}).eq('id',job.id);if(!error)await loadTalentLawyer()};card.append(close);container.append(card)}
  const directory=document.getElementById('talent-lawyer-directory');directory.replaceChildren();
  const chosenProvince=document.getElementById('talent-filter-province')?.value||'';
  if(jobs.error)document.getElementById('talent-lawyer-status').textContent='No se pudieron cargar oportunidades: '+jobs.error.message;
+ if(appResult.error)document.getElementById('talent-lawyer-status').textContent='No se pudieron consultar postulaciones: '+appResult.error.message;
  for(const candidate of profiles.data||[]){if(chosenProvince&&candidate.province!==chosenProvince)continue;const card=document.createElement('article');card.className='talent-item';const title=document.createElement('strong');title.textContent=(candidate.interests||'Interés general')+' · '+candidate.city+', '+candidate.province;const subtitle=document.createElement('p');subtitle.textContent=candidate.headline||'Estudiante registrado';card.append(title,subtitle);directory.append(card)}
  if(profiles.error)directory.textContent='No se pudo consultar el directorio: '+profiles.error.message;
  else if(!directory.children.length)directory.textContent='No se encontraron perfiles visibles con ese filtro.';

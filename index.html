@@ -2035,7 +2035,7 @@ function setupAdminViews(){
  if(adminViewsReady)return;
  const admin=document.getElementById('admin-command');
  const grid=admin?.querySelector('.admin-command-grid');
- const panes=grid?.querySelectorAll(':scope > .admin-command-pane');
+ const panes=admin?.querySelectorAll(':scope > .admin-command-pane');
  if(!admin||!grid||!panes||panes.length<2)return;
  const adm=document.getElementById('member-admin');
  const promoted=document.getElementById('promotion-admin-workspace');

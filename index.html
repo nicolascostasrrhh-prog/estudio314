@@ -1614,15 +1614,10 @@ async function loadClientInquiries(){
  ]);
  const readDates=new Map((reads.data||[]).map(x=>[x.inquiry_id,Date.parse(x.last_read_at)]));
  const unreadCount=id=>(messages.data||[]).filter(x=>x.inquiry_id===id && Date.parse(x.created_at)>(readDates.get(id)||0)).length;
- /* previous query replaced */
- /*
-  authClient.from('client_inquiries').select('id,subject,status,created_at').eq('sender_id',liveUser.id).order('created_at',{ascending:false}).limit(30),
-  authClient.from('client_inquiries').select('id,subject,body,status,created_at').eq('lawyer_id',liveUser.id).order('created_at',{ascending:false}).limit(50)
- ]); */
  if(notice){
   const pending=(received.data||[]).filter(c=>c.status==='nueva'||unreadCount(c.id)>0).length;
   notice.hidden=Boolean(received.error)||pending===0;
-  if(!notice.hidden){notice.querySelector('strong').textContent=pending+' '+(pending===1?'consulta nueva':'consultas nuevas');notice.querySelector('p').textContent='Tenés consultas para revisar. Entrá a CRM para responder y organizar el seguimiento.';}
+  if(!notice.hidden){notice.querySelector('strong').textContent=pending+' '+(pending===1?'conversación pendiente':'conversaciones pendientes');notice.querySelector('p').textContent='Revisá consultas nuevas y respuestas sin leer desde tu CRM.';}
   const tab=document.querySelector('.account-tab[data-account-tab="contactos"]');
   if(tab){let badge=tab.querySelector('.inquiry-count');if(!badge){badge=document.createElement('span');badge.className='inquiry-count';tab.append(badge)}badge.textContent=pending?String(pending):'';badge.hidden=!pending;}
  }

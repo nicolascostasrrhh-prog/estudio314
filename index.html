@@ -2035,7 +2035,7 @@ function setupAdminViews(){
  if(adminViewsReady)return;
  const admin=document.getElementById('admin-command');
  const grid=admin?.querySelector('.admin-command-grid');
- const panes=admin?.querySelectorAll(':scope > .admin-command-pane');
+ const panes=grid?.querySelectorAll(':scope > .admin-command-pane');
  if(!admin||!grid||!panes||panes.length<2)return;
  const adm=document.getElementById('member-admin');
  const promoted=document.getElementById('promotion-admin-workspace');
@@ -2062,7 +2062,7 @@ function setupAdminViews(){
 }
 function showAdminView(name){
  if(!adminViewsReady)return;
- document.querySelectorAll('.admin-inner-tabs button').forEach(b=>b.classList.toggle('is-active',b.dataset.adminView===name));
+ document.querySelectorAll('.admin-inner-tabs button').forEach(b=>{const active=b.dataset.adminView===name;b.classList.toggle('is-active',active);b.setAttribute('aria-current',active?'page':'false')});
  document.querySelectorAll('.admin-view').forEach(p=>{p.hidden=p.id!=='admin-view-'+name});
 }
 

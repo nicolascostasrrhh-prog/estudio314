@@ -1362,10 +1362,9 @@ function showMembershipFieldError(event){
 }
 async function submitMembership(ev){
  ev.preventDefault();
- if(realBusy)return;
+ if(realBusy){membershipFeedback('Ya estamos procesando una solicitud. Esperá unos segundos.');return}
  if(!authClient||!liveUser){membershipFeedback('Ingresá a tu cuenta para solicitar admisión.',true);return}
  membershipFeedback('Preparando solicitud...');
- if(!confirm('¿Enviar solicitud de membresía para evaluación? No se realizará un cobro.')){membershipFeedback('Solicitud cancelada. Podés volver a enviarla cuando quieras.');return}
  realBusy=true;document.getElementById('membership-send').disabled=true;membershipFeedback('Enviando solicitud. No cierres esta ventana.');
  try{
  const integral=document.getElementById('member-mode').value==='integral';

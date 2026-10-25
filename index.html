@@ -767,7 +767,7 @@ function go(id){
  window.scrollTo({top:0,behavior:'smooth'});
  if(id==='buscar'){renderLawyers();loadPublicLawyers()}
  if(id==='panel'){go('cuenta');return;}
- if(id==='formacion')loadMyStudentApplication();
+ if(id==='formacion'){loadMyStudentApplication();loadTalentStudent()}
 }
 function handlePlanRoute(){
  const id=location.hash.slice(1);
@@ -1034,7 +1034,7 @@ async function saveTalentStudent(event){
  const payload={user_id:user.id,province:document.getElementById('talent-province').value,city:document.getElementById('talent-city').value.trim(),interests:document.getElementById('talent-interest').value,headline:document.getElementById('talent-headline').value.trim(),visible:document.getElementById('talent-visible').checked,updated_at:new Date().toISOString()};
  const {data:existing,error:readError}=await authClient.from('talent_student_profiles').select('user_id').eq('user_id',user.id).maybeSingle();
  if(readError){document.getElementById('talent-student-status').textContent=readError.message;return}
- const {error}=existing?await authClient.from('talent_student_profiles').update(payload).eq('user_id',user.id):await authClient.from('talent_student_profiles').insert(payload);
+ let result;if(existing){result=await authClient.from('talent_student_profiles').update(payload).eq('user_id',user.id)}else{result=await authClient.from('talent_student_profiles').insert({...payload,visible:false});if(!result.error&&payload.visible)result=await authClient.from('talent_student_profiles').update({visible:true}).eq('user_id',user.id)}const {error}=result;
  document.getElementById('talent-student-status').textContent=error?'No se pudo guardar: '+error.message:'Perfil guardado. Visibilidad: '+(payload.visible?'autorizada':'desactivada');
 }
 async function publishTalentOpportunity(event){

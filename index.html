@@ -1366,6 +1366,7 @@ async function loadAdminMembership(){
  const allIds=[...new Set((requests||[]).map(x=>x.user_id))];
  const contactResult=allIds.length?await authClient.from('membership_contact_details').select('user_id,full_name,phone').in('user_id',allIds):{data:[],error:null};
  const memberResult=allIds.length?await authClient.from('member_profiles').select('user_id,display_name').in('user_id',allIds):{data:[],error:null};
+ const emailResult=await authClient.rpc('admin_membership_contact_emails');
  let configs=[],configError=null;
  if(ids.length){const result=await authClient.from('membership_configurations').select('user_id,include_content,include_ads,include_optimization,status').in('user_id',ids);configs=result.data||[];configError=result.error}
  const summary=document.getElementById('member-admin-overview');
@@ -1376,6 +1377,7 @@ async function loadAdminMembership(){
   const config=configs.find(c=>c.user_id===request.user_id);
   const contact=(contactResult.data||[]).find(c=>c.user_id===request.user_id);
   const member=(memberResult.data||[]).find(m=>m.user_id===request.user_id);
+  const email=(emailResult.data||[]).find(m=>m.user_id===request.user_id)?.email;
   const card=document.createElement('article');card.className='admin-admission-card';
   const header=document.createElement('div');header.className='admin-admission-head';
   const title=document.createElement('strong');title.textContent=(request.province||'Provincia no informada')+' · '+(request.requested_mode==='integral'?'Crecimiento Profesional':'Conexión');
@@ -1383,6 +1385,7 @@ async function loadAdminMembership(){
   const identity=document.createElement('h4');identity.textContent=contact?.full_name||member?.display_name||'Nombre pendiente de completar';card.append(identity);
   const detail=document.createElement('p');detail.textContent='Matrícula '+request.license_number+' · '+request.bar_association;card.append(detail);
   const phone=document.createElement('p');phone.textContent=contact?.phone?'Teléfono: '+contact.phone:'Teléfono no informado en esta solicitud';card.append(phone);
+  const emailLine=document.createElement('p');emailLine.textContent=email?'Correo: '+email:'Correo no disponible';card.append(emailLine);
   const date=document.createElement('small');date.textContent='Presentada el '+new Date(request.submitted_at).toLocaleDateString('es-AR');card.append(date);
   if(request.requested_mode==='integral'){
    const services=document.createElement('p');services.className='admin-admission-services';

@@ -1342,7 +1342,7 @@ async function submitMembership(ev){
  const integral=document.getElementById('member-mode').value==='integral';
  if(integral)await saveMembershipConfiguration(false);
  const contact={user_id:liveUser.id,full_name:document.getElementById('member-full-name').value.trim(),phone:document.getElementById('member-phone').value.trim(),updated_at:new Date().toISOString()};
- if(contact.full_name.length<3||!/^\\+?[0-9() .-]{7,35}$/.test(contact.phone))throw new Error('Revisá el nombre y el número de teléfono.');
+ if(contact.full_name.length<3||!/^[+]?[0-9() .-]{7,35}$/.test(contact.phone))throw new Error('Revisá el nombre y el número de teléfono.');
  const {error:contactError}=await authClient.from('membership_contact_details').upsert(contact,{onConflict:'user_id'});if(contactError)throw contactError;
  const {error}=await authClient.rpc('submit_membership_request',{p_mode:document.getElementById('member-mode').value,p_province:document.getElementById('member-province').value.trim(),p_license:document.getElementById('member-license').value.trim(),p_bar:document.getElementById('member-bar').value.trim()});
  if(error)throw error;

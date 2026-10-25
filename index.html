@@ -766,11 +766,12 @@ function go(id){
  }
  window.scrollTo({top:0,behavior:'smooth'});
  if(id==='buscar'){renderLawyers();loadPublicLawyers()}
- if(id==='panel')renderPanel();
+ if(id==='panel'){go('cuenta');return;}
  if(id==='formacion')loadMyStudentApplication();
 }
 function handlePlanRoute(){
  const id=location.hash.slice(1);
+ if(id==='panel'){go('cuenta');return;}
  if(['plan-acceso','plan-crecimiento','membresias','cuenta','inicio','trayectoria','formacion','buscar'].includes(id)){
   document.querySelectorAll('main section').forEach(e=>e.classList.toggle('active',e.id===id));
   window.scrollTo({top:0,behavior:'auto'});
@@ -1994,7 +1995,8 @@ async function reviewGrowthRequest(id){
 }
 
 async function refreshCreditShop(){
- if(true){const old=document.getElementById('credit-shop');if(old)old.hidden=true;return;}
+ const retiredWallet=document.getElementById('credit-shop');
+ if(retiredWallet){retiredWallet.hidden=true;return;}
  const holder=document.getElementById('credit-shop');
  if(!holder||!authClient||!liveUser)return;
  const [packs,purchases,balance]=await Promise.all([

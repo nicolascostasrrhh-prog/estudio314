@@ -1675,12 +1675,13 @@ async function loadClientInquiries(){
   items.sort((a,b)=>Date.parse(b.date)-Date.parse(a.date));
   const heading=document.createElement('div');heading.className='notification-feed-head';const title=document.createElement('strong');title.textContent='Tus avisos';const refresh=document.createElement('button');refresh.type='button';refresh.className='outline';refresh.textContent='Actualizar';refresh.onclick=loadClientInquiries;heading.append(title,refresh);notificationBox.append(heading);
   for(const item of items.slice(0,12)){const b=document.createElement('button');b.type='button';b.className='notification-item';b.onclick=()=>openClientInquiryChat(item.id);const t=document.createElement('strong');t.textContent=item.title;const d=document.createElement('span');d.textContent=item.description;b.append(t,d);notificationBox.append(b)}
+  if([sent.error,received.error,reads.error,messages.error].some(Boolean)){const p=document.createElement('p');p.className='small muted';p.textContent='Algunos avisos no pudieron cargarse. Tocá Actualizar para reintentar.';notificationBox.append(p)}
   if(!items.length){const p=document.createElement('p');p.className='small muted';p.textContent='No hay mensajes nuevos. Tus consultas siguen disponibles en el panel.';notificationBox.append(p)}
  }
  const readDates=new Map((reads.data||[]).map(x=>[x.inquiry_id,Date.parse(x.last_read_at)]));
  const unreadCount=id=>(messages.data||[]).filter(x=>x.inquiry_id===id && Date.parse(x.created_at)>(readDates.get(id)||0)).length;
  renderInquirySummary(received.data||[]);
- if(refreshStatus)refreshStatus.textContent='Actualizado: '+inquiryTime(new Date());
+ if(refreshStatus)refreshStatus.textContent=[sent.error,received.error,reads.error,messages.error].some(Boolean)?'No se pudo actualizar toda la información. Volvé a intentar.':'Actualizado: '+inquiryTime(new Date());
  if(notice){
   const pending=(received.data||[]).filter(c=>c.status==='nueva'||unreadCount(c.id)>0).length;
   notice.hidden=Boolean(received.error)||pending===0;

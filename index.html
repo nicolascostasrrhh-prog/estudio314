@@ -1009,7 +1009,8 @@ async function submitAuth(event){
   }else{
    const {error}=await authClient.auth.signInWithPassword({email,password});
    if(error)throw error;
-   await displayAccount();
+   authText('Contraseña correcta. Abriendo tu cuenta...');
+   try{await displayAccount()}catch(loadError){console.error('Error al cargar la cuenta',loadError);authText('Sesión iniciada, pero hubo un problema al cargar algunos módulos: '+authErr(loadError)+'. Actualizá la página para reintentar.');}
   }
  }catch(err){authText('No pudimos completar el acceso: '+authErr(err))}
  finally{authBusy=false;document.getElementById('auth-submit').disabled=false}

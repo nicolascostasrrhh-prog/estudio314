@@ -1016,7 +1016,7 @@ async function submitAuth(event){
    authText('Contraseña correcta. Abriendo tu cuenta...');
    try{await displayAccount()}catch(loadError){console.error('Error al cargar la cuenta',loadError);authText('Sesión iniciada, pero hubo un problema al cargar algunos módulos: '+authErr(loadError)+'. Actualizá la página para reintentar.');}
   }
- }catch(err){authText('No pudimos completar el acceso: '+authErr(err))}
+ }catch(err){const code=err?.code||'';const msg=String(err?.message||'');const friendly=code==='over_email_send_rate_limit'||err?.status===429?'Se alcanzó el límite temporal de correos de confirmación. Esperá antes de volver a intentar. No repitas el registro continuamente.':code==='email_address_invalid'||/email address.*invalid/i.test(msg)?'Supabase rechazó el correo electrónico. Usá una dirección real a la que tengas acceso para recibir la confirmación.':code==='user_already_exists'?'Ya existe una cuenta con ese correo. Probá ingresar o recuperar tu contraseña.':'No pudimos completar el acceso: '+authErr(err);authText(friendly)}
  finally{authBusy=false;document.getElementById('auth-submit').disabled=false}
 }
 

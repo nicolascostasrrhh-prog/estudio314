@@ -707,7 +707,7 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 <div class="eyebrow">ACCESO A ESTUDIO 3.14</div><h3>Ingresá o registrate</h3>
 <div class="passwordless-card"><div class="eyebrow">ACCESO MÁS FÁCIL</div><h4>Ingresá con un enlace por correo</h4><p>Sin contraseña. Escribí tu correo una sola vez y abrí el enlace que recibas. Si todavía no tenés cuenta, Supabase podrá crearla como perfil pendiente de verificación.</p><form id="magic-form" onsubmit="sendMagicLink(event)"><label for="magic-email">Tu correo electrónico</label><div class="magic-input-row"><input type="email" id="magic-email" required autocomplete="email" placeholder="tu@email.com"><button class="primary" type="submit" id="magic-send">Enviar enlace </button></div></form><div class="magic-message" id="magic-message" role="status" aria-live="polite">Te enviaremos un enlace para entrar, sin contraseña.</div><button type="button" class="auth-secondary" onclick="openResetPassword()">¿Olvidaste tu contraseña?</button><div id="reset-email-panel" class="reset-email-panel" hidden><label for="reset-email-address">Correo de recuperación</label><input id="reset-email-address" type="email" autocomplete="email" placeholder="tu@email.com"><button class="outline" type="button" id="reset-send" onclick="resetPassword()">Enviar enlace para restablecer </button><p id="reset-feedback" aria-live="polite"></p></div></div><details class="auth-password-details"><summary>¿Preferís ingresar con contraseña?</summary><div class="auth-alternative">Acceso alternativo</div>
 <div class="auth-tabs"><button type="button" id="tab-login" class="active" onclick="authTab('login')">Ingresar</button><button type="button" id="tab-register" onclick="authTab('register')">Crear cuenta</button></div>
-<form id="auth-form" onsubmit="submitAuth(event)">
+<form id="auth-form" novalidate onsubmit="submitAuth(event)">
 <div id="auth-name-row" class="field" hidden><label for="auth-name">Nombre y apellido</label><input id="auth-name" autocomplete="name" maxlength="120"></div>
 <div class="field"><label for="auth-email">Correo electrónico</label><input id="auth-email" type="email" required autocomplete="email"></div>
 <div class="field"><label for="auth-password">Contraseña (mínimo 8 caracteres)</label><input id="auth-password" type="password" minlength="8" required autocomplete="current-password"></div>
@@ -994,13 +994,17 @@ async function sendMagicLink(event){
 function authErr(error){return error && error.message ? error.message:'No fue posible completar la solicitud.'}
 async function submitAuth(event){
  event.preventDefault();
- if(!authClient||authBusy){authText('El registro real todavía no está disponible.');return}
+ const form=event.currentTarget||document.getElementById('auth-form');
+ if(!form.checkValidity()){const field=form.querySelector(':invalid');authText('Revisá el campo «'+(field?.labels?.[0]?.textContent||'obligatorio')+'». Completalo correctamente para continuar.');field?.focus();return}
+ if(authBusy){authText('Estamos procesando tu solicitud. Esperá unos segundos.');return}
+ if(!authClient){authText('No hay conexión con el servicio de registro. Actualizá la página e intentá nuevamente.');return}
  const email=document.getElementById('auth-email').value.trim();
  const password=document.getElementById('auth-password').value;
  const display_name=document.getElementById('auth-name').value.trim();
  if(password.length<8){authText('La contraseña debe tener por lo menos ocho caracteres.');return}
  if(authMode==='register' && display_name.length<2){authText('Ingresá tu nombre y apellido.');return}
  authBusy=true;document.getElementById('auth-submit').disabled=true;
+ authText(authMode==='register'?'Creando tu cuenta. Esperá unos segundos...':'Comprobando tus datos de acceso...');
  try{
   if(authMode==='register'){
    const {data,error}=await authClient.auth.signUp({email,password,options:{data:{display_name},emailRedirectTo:location.origin+location.pathname}});

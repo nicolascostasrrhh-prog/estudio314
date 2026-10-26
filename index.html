@@ -711,7 +711,7 @@ footer{background:#202428;color:#f6f7f8;text-align:center;padding:46px 20px;line
 <div id="auth-name-row" class="field" hidden><label for="auth-name">Nombre y apellido</label><input id="auth-name" autocomplete="name" maxlength="120"></div>
 <div class="field"><label for="auth-email">Correo electrónico</label><input id="auth-email" type="email" required autocomplete="email"></div>
 <div class="field"><label for="auth-password">Contraseña (mínimo 8 caracteres)</label><input id="auth-password" type="password" minlength="8" required autocomplete="current-password"></div>
-<button class="primary wide-action" type="submit" id="auth-submit">Ingresar a mi cuenta </button>
+<button class="primary wide-action" type="submit" id="auth-submit" onclick="document.getElementById('auth-form-feedback').textContent='Procesando formulario...';">Ingresar a mi cuenta </button><p id="auth-form-feedback" role="status" aria-live="polite" style="margin:8px 0 12px;color:#246648;font-weight:600"></p>
 <button type="button" class="auth-secondary" onclick="openResetPassword()">Olvidé mi contraseña</button><div id="password-recovery" class="field" hidden><label for="new-password">Nueva contraseña</label><input id="new-password" type="password" minlength="8" autocomplete="new-password"><button type="button" class="outline wide-action" onclick="saveNewPassword()">Guardar nueva contraseña</button></div>
 </form><p class="small muted">El registro queda pendiente de verificación y admisión. Registrarse no habilita automáticamente la prestación de servicios jurídicos en la plataforma.</p></details>
 </div>
@@ -881,7 +881,7 @@ let authClient=null,authMode='login',authBusy=false;let liveProfile=null;let liv
 const authCfg=window.ESTUDIO314_SUPABASE_CONFIG||{};
 const authReady=Boolean(authCfg.url && authCfg.publishableKey && window.supabase);
 const authNotice=document.getElementById('auth-status');
-function authText(t){authNotice.textContent=t}
+function authText(t){authNotice.textContent=t;const inline=document.getElementById('auth-form-feedback');if(inline)inline.textContent=t}
 function authTab(mode){
  authMode=mode;
  document.getElementById('tab-login').classList.toggle('active',mode==='login');
